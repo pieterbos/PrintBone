@@ -97,16 +97,16 @@ bell_polygon = concat(
 //render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-400, max_height=-200);
 //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-200, max_height=0);
 
-rotate_extrude()
-bottom_joint([[0,0], [neck_pipe_radius, 10]]);
+
 
 //translated_tuning_slide();
 
 
-neckpipe(bell_thickness);
-
-bell_side_neckpipe_bell_connection();
-tuning_slide_side_neckpipe_bell_connection();
+bottom_part_of_neckpipe(bell_thickness);
+top_part_of_neckpipe(bell_thickness);
+                   //neckpipe(bell_thickness);
+//bell_side_neckpipe_bell_connection();
+//tuning_slide_side_neckpipe_bell_connection();
 
 
 module translated_tuning_slide() {
@@ -171,6 +171,32 @@ module neckpipe_bell_connection(height) {
             solid_bell();
         }
     }
+}
+
+module bottom_part_of_neckpipe(wall_thickness) {
+    intersection() {
+        translate([-50, -tuning_slide_radius*2-50, -480])
+        cube(190);
+           neckpipe(wall_thickness);
+    }
+    translate([0, -tuning_slide_radius*2, -480])
+    rotate_extrude()
+    
+    top_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]]);
+}
+
+
+module top_part_of_neckpipe(wall_thickness) {
+    intersection() {
+        translate([-50, -tuning_slide_radius*2-50, -670])
+        cube(190);
+                   neckpipe(wall_thickness);
+    }
+    bottom_joint_height=10;
+    translate([0, -tuning_slide_radius*2, -670+190-bottom_joint_height])
+    rotate_extrude()
+    
+    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]]);
 }
 
 module neckpipe(wall_thickness) {
