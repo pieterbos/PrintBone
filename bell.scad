@@ -53,7 +53,7 @@ inner_lip = [[lip_start+lip_offset, 0], [lip_start+lip_slant +lip_offset, lip_le
 
 total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
 
-$fn = 300;
+$fn = 25;
 
 //flare = 0.7;
 
@@ -64,9 +64,15 @@ echo(total_bell_height);
 bell_polygon = concat(
             //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
             //the tuning slide of 10.53 - 9.9!
-            [[10.53, -55.93-96.85-150.42-150.42-53.36], [10.53, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length]],
+            [
+            [10.53, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length],
+            [10.53, -55.93-96.85-150.42-150.42-53.36]
+            //[
+            ],
              //this is equivalent to   conic_tube(h=53.36, r1=10.53, r2=11.05, wall=bell_thickness);
-            [[11.05, -55.93-96.85-150.42-150.42], [10.53, -55.93-96.85-150.42-150.42-53.36]],
+            [[11.05, -55.93-96.85-150.42-150.42], 
+           // [
+            [10.53, -55.93-96.85-150.42-150.42-53.36]],
     
             2d_bessel_polygon(translation=-55.93-96.85-150.42,  throat_radius=11.05, mouth_radius=15.07, length=150.42, flare=1.260),
             2d_bessel_polygon(translation=-55.93-96.85, throat_radius=15.07, mouth_radius=22.28, length=150.42, flare=0.894),
@@ -78,20 +84,26 @@ bell_polygon = concat(
 //bends, then is straight again
 //this makes this trombone too wide, which is a bit strange
 
-translated_tuning_slide();
 
-//neckpipe(bell_thickness);
-//small_tuning_slide_sleeve(bell_thickness);
-//temporary render
+
+//temporary render for a test
 //translate([0,0,400])
 //render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-410, max_height=-400);
 //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
 
-//permanent bell section render
+//bell section render
 //solid_bell();
-//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-600, max_height=-400);
+//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-800, max_height=-400);
 //render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-400, max_height=-200);
 //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-200, max_height=0);
+
+rotate_extrude()
+bottom_joint([[0,0], [neck_pipe_radius, 10]]);
+
+//translated_tuning_slide();
+
+
+neckpipe(bell_thickness);
 
 bell_side_neckpipe_bell_connection();
 tuning_slide_side_neckpipe_bell_connection();
@@ -99,9 +111,10 @@ tuning_slide_side_neckpipe_bell_connection();
 
 module translated_tuning_slide() {
     translate([0,-tuning_slide_radius,total_bell_height-tuning_slide_small_length]) {
-    rotate([270,0,0]) {
-        tuning_slide();
-    }
+        rotate([270,0,0]) {
+            tuning_slide();
+        }
+    };
 }
 
 module slide_receiver(wall_thickness, solid = false) {
@@ -123,10 +136,20 @@ module slide_receiver(wall_thickness, solid = false) {
             cylinder(r=slide_receiver_large_radius + wall_thickness, h=edge_for_locknut_length);
         }
     
-        //sleeve to make a good connection to the neckpipe - which could be less wide than this!
-    sleeve_length = 25;
-        translate([0,0,-sleeve_length])
-        cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=sleeve_length);
+        if(!solid) {
+            //sleeve to make a good connection to the neckpipe - which could be less wide than this!
+        sleeve_length = 25;
+            translate([0,0,-sleeve_length])
+            difference() {
+                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=sleeve_length);
+                cylinder(r2=slide_receiver_small_radius, r1=neck_pipe_radius, h=sleeve_length);
+            }
+        } else {
+            //sleeve to make a good connection to the neckpipe - which could be less wide than this!
+        sleeve_length = 25;
+            translate([0,0,-sleeve_length])
+                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=sleeve_length);
+        }            
 }
 
 module bell_side_neckpipe_bell_connection() {
@@ -144,7 +167,7 @@ module neckpipe_bell_connection(height) {
             translate([0,0,height])
             rotate([90,0,0])
             cylinder(h = tuning_slide_radius*2, r=neckpipe_bell_connection_radius);
-            solid_small_tuning_slide_sleeve(bell_thickness);
+            solid_neckpipe(bell_thickness);
             solid_bell();
         }
     }
@@ -166,6 +189,13 @@ module solid_neckpipe(wall_thickness) {
 
 module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false) {
 
+
+        if(solid) {
+            solid_small_tuning_slide_sleeve(bell_thickness);
+        } else {
+            small_tuning_slide_sleeve(bell_thickness);
+        }
+
         od = neck_pipe_radius*2 + wall_thickness+2;
         id = solid? 0.0005 : neck_pipe_radius*2;
 
@@ -182,9 +212,9 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false) {
 
         goose_neck_angle=atan(goose_neck_y_length/goose_neck_x_length);
 
-
-            translate([0, -tuning_slide_radius *2, total_bell_height + tuning_sleeve_extra_length])
-    curvedPipe([ [0,0,0],
+        //neck pipe, including gooseneck
+        translate([0, -tuning_slide_radius *2, total_bell_height + tuning_sleeve_extra_length])
+            curvedPipe([ [0,0,0],
 				[0,0,goose_neck_start],
 				[0,-goose_neck_offset,slide_receiver_begin]				
 			   ],
@@ -193,9 +223,10 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false) {
                 od,
                 id);
     
+        //slide receiver
         translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])
         rotate([goose_neck_angle, 0, 0])
-        slide_receiver(wall_thickness);
+        slide_receiver(wall_thickness, solid);
 
 }
 
@@ -208,8 +239,8 @@ module small_tuning_slide_sleeve(wall_thickness) {
     
     translate([0, -tuning_slide_radius *2, total_bell_height])
     difference() {
-        cylinder(h=10, r2=neck_pipe_radius+wall_thickness, r1=tuning_slide_small_radius + +tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
-        cylinder(h=10, r=neck_pipe_radius);
+        cylinder(h=20, r2=neck_pipe_radius+wall_thickness, r1=tuning_slide_small_radius + +tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
+        cylinder(h=20, r=neck_pipe_radius);
     }
     //TODO: at the bottom, slant towards the neckpipe or we will not have a good connection!
 }
@@ -248,7 +279,9 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     //TODO: this seems to bewithout the tuning slide cylinder on top!
          
     
-    polygon = cut_curve_at_height2(cut_curve_at_height(bell_polygon, min_height, max_height), min_height, max_height);
+    polygon = cut_curve_at_height2( //bell_polygon,
+            cut_curve_at_height(bell_polygon, min_height, max_height)
+        , min_height, max_height);
 
     //TODO: cut polygon at desired height and start at desired height
     //for the current part
@@ -286,7 +319,12 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
 }
 
 module solid_bell() {
-    rotate_extrude()   extrude_solid(bell_polygon, bell_thickness);
+    rotate_extrude()   
+    bell_profile();
+}
+
+module bell_profile() {
+    extrude_solid(bell_polygon, bell_thickness);
 }
 
 
@@ -427,13 +465,13 @@ function cut_curve_at_height(curve, min_height, max_height) =
                 if(curve[i+1][1] >= min_height)// && curve[i][1] <= max_height)
                    curve[i]             
         ],
-        [for (i = [len(curve)-1]) if(curve[i] >= min_height) curve[len(curve)-1]]
+        [for (i = [len(curve)-1]) if(curve[i][1] >= min_height) curve[i]]
     );
             
 function cut_curve_at_height2(curve, min_height, max_height) =
 
     concat(
-        [for (i = [0]) if(curve[0] <= max_height) curve[0]],
+        [for (i = [0]) if(curve[i][1] <= max_height) curve[0]],
         [
         for (i = [1:1:len(curve)-1])
             if( curve[i-1][1] <= max_height)
