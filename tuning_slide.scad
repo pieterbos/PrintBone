@@ -12,13 +12,15 @@ tuning_slide_large_radius = 9.9;
 tuning_bow_wall_thickness = 1.6;
 tuning_slide_wall_thickness = 0.7;
 
+tuning_slide_step_length_in_degrees = 4;
 
+sweep_steps = 100;
 
 $fn=50;
 
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
-function circle_points (radius=1) = [ for (a=[0:4:360]) radius*[sin(a), cos(a)]];    
+function circle_points (radius=1) = [ for (a=[0:tuning_slide_step_length_in_degrees:360]) radius*[sin(a), cos(a)]];    
     
 pi = 3.14159265359;
 
@@ -73,7 +75,7 @@ module tuning_slide(solid=false) {
 }
 
 module tuning_slide_bow(solid=false) {
-    step = 0.005;
+    step = 0.5/sweep_steps;
     path = [for (t=[0:step:0.5+step]) rotate_path(t)];
     path_transforms = construct_transform_path(path);
 

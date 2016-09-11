@@ -1,10 +1,10 @@
 //use <Bezier.scad>;
+//tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
-
+//curve library to generate the neckpipe. Not ideal, but works for now and much easier
+//to create good tubes with than with sweep() like the tuning slide.
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
-
-use <joints.scad>;
 
 slide_receiver_tolerance = 0.2;
 
@@ -78,27 +78,31 @@ bell_polygon = concat(
 //bends, then is straight again
 //this makes this trombone too wide, which is a bit strange
 
-translate([0,-tuning_slide_radius,total_bell_height-tuning_slide_small_length]) {
-    rotate([270,0,0]) {
-        tuning_slide();
-    }
-}
+translated_tuning_slide();
 
-neckpipe(bell_thickness);
-small_tuning_slide_sleeve(bell_thickness);
+//neckpipe(bell_thickness);
+//small_tuning_slide_sleeve(bell_thickness);
 //temporary render
 //translate([0,0,400])
 //render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-410, max_height=-400);
 //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
 
 //permanent bell section render
-render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-600, max_height=-400);
-render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-400, max_height=-200);
-render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-200, max_height=0);
+//solid_bell();
+//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-600, max_height=-400);
+//render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-400, max_height=-200);
+//render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-200, max_height=0);
 
 bell_side_neckpipe_bell_connection();
 tuning_slide_side_neckpipe_bell_connection();
 
+
+module translated_tuning_slide() {
+    translate([0,-tuning_slide_radius,total_bell_height-tuning_slide_small_length]) {
+    rotate([270,0,0]) {
+        tuning_slide();
+    }
+}
 
 module slide_receiver(wall_thickness, solid = false) {
 
