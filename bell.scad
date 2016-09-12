@@ -11,13 +11,14 @@ slide_receiver_tolerance = 0.2;
 slide_receiver_small_radius = 50/pi/2 + slide_receiver_tolerance;
 slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_tolerance;
 
+slide_receiver_sleeve_length=25;//normally 25
+
 //extra width added to the slide receiver to match the slide
 
 
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
 
-echo(7.25 * 2);
 
 bell_thickness = 0.8;
 
@@ -53,12 +54,12 @@ inner_lip = [[lip_start+lip_offset, 0], [lip_start+lip_slant +lip_offset, lip_le
 
 total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
 
-$fn = 25;
+$fn = 100;
 
 //flare = 0.7;
 
-//step of the for loop: 5mm
-steps=500;
+//steps of the bessel curve for loop
+steps=100;
 echo(total_bell_height);
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_polygon = concat(
@@ -84,7 +85,7 @@ bell_polygon = concat(
 //bends, then is straight again
 //this makes this trombone too wide, which is a bit strange
 
-
+rotate([180,0,0]) {
 
 //temporary render for a test
 //translate([0,0,400])
@@ -93,21 +94,28 @@ bell_polygon = concat(
 
 //bell section render
 //solid_bell();
-render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-800, max_height=-400);
-render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-400, max_height=-200);
-render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-200, max_height=0);
+//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
+//render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
+
+/*union() {
+    render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-580, max_height=-290);
+    bell_connection_bases();
+}*/
+//render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-290, max_height=0);
 
 
 
-translated_tuning_slide();
+//translated_tuning_slide();
 
-check_slide_clearance(bell_thickness);
-bottom_part_of_neckpipe(bell_thickness);
-top_part_of_neckpipe(bell_thickness);
-                   //neckpipe(bell_thickness);
-bell_side_neckpipe_bell_connection();
+//#check_slide_clearance(bell_thickness);
+//bottom_part_of_neckpipe(bell_thickness);
+//top_part_of_neckpipe(bell_thickness);
+//neckpipe(bell_thickness);
+//slide_receiver(bell_thickness);
+
+//bell_side_neckpipe_bell_connection();
 tuning_slide_side_neckpipe_bell_connection();
-
+}
 
 module check_slide_clearance(wall_thickness) {
     neckpipe_implementation(wall_thickness,
@@ -125,6 +133,7 @@ module translated_tuning_slide() {
 
 module slide_receiver(wall_thickness, solid = false) {
 
+    
     if(!solid) {
         difference() {
             cylinder(r2=slide_receiver_large_radius + wall_thickness, r1=slide_receiver_small_radius +wall_thickness, h=slide_receiver_length);
@@ -144,17 +153,17 @@ module slide_receiver(wall_thickness, solid = false) {
     
         if(!solid) {
             //sleeve to make a good connection to the neckpipe - which could be less wide than this!
-        sleeve_length = 25;
-            translate([0,0,-sleeve_length])
+        
+            translate([0,0,-slide_receiver_sleeve_length])
             difference() {
-                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=sleeve_length);
-                cylinder(r2=slide_receiver_small_radius, r1=neck_pipe_radius, h=sleeve_length);
+                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=slide_receiver_sleeve_length);
+                cylinder(r2=slide_receiver_small_radius, r1=neck_pipe_radius, h=slide_receiver_sleeve_length);
             }
         } else {
             //sleeve to make a good connection to the neckpipe - which could be less wide than this!
-        sleeve_length = 25;
-            translate([0,0,-sleeve_length])
-                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=sleeve_length);
+
+            translate([0,0,-slide_receiver_sleeve_length])
+                cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=slide_receiver_sleeve_length);
         }            
 }
 
@@ -168,15 +177,20 @@ module tuning_slide_side_neckpipe_bell_connection() {
 }
 
 module neckpipe_bell_connection(height) {
-    difference() {
+
+
         difference() {
             translate([0,0,height])
             rotate([90,0,0])
             cylinder(h = tuning_slide_radius*2, r=neckpipe_bell_connection_radius);
             solid_neckpipe(bell_thickness);
             solid_bell();
-        }
-    }
+
+            connection_bases(0.2);
+        }        
+     
+
+
 }
 
 module bottom_part_of_neckpipe(wall_thickness) {
@@ -210,6 +224,8 @@ module neckpipe(wall_thickness) {
 			    neck_pipe_radius,
         false);
     
+    neckpipe_connection_bases();
+    
     //TODO: slide locknut
     //TODO: split in separate parts so it can be printed
 }
@@ -217,6 +233,7 @@ module neckpipe(wall_thickness) {
 //a solid neckpipe. useful in difference with some other things
 module solid_neckpipe(wall_thickness) {
     neckpipe_implementation(wall_thickness, neck_pipe_radius, true);
+    connection_bases();
 }
 
 module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, check_slide_clearance=false) {
@@ -232,7 +249,7 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
         id = solid? 0.0005 : neck_pipe_radius*2;
 
             
-        goose_neck_offset = 3.5;
+        goose_neck_offset = 4;
 
         goose_neck_start = 75;
 
@@ -260,12 +277,55 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
         rotate([goose_neck_angle, 0, 0])
         slide_receiver(wall_thickness, solid);
     
+        for(i = [[-530, 22], [-350,25]]) {
+            
+    
+        }
+    
     if(check_slide_clearance) {
         translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])    
             rotate([goose_neck_angle, 0, 0])
             cylinder(r=5, h=730);
 
     }
+}
+
+module connection_bases(tolerance=0.0) {
+    neckpipe_connection_bases(tolerance);
+    bell_connection_bases(tolerance);
+    
+}
+
+module neckpipe_connection_bases(tolerance=0.0) {
+    neckpipe_connection_base(19, -530, tolerance);
+    neckpipe_connection_base(16, -340, tolerance);
+}
+
+module neckpipe_connection_base(translation, height, tolerance) {
+    difference() {
+        translate([0,-tuning_slide_radius*2+translation, height-3])
+        rotate([75,0,0])
+        scale([1,1,1])
+        cylinder(r2=8+tolerance, r1=1+tolerance, h=16, $fn=4);  
+        neckpipe_implementation(bell_thickness, neck_pipe_radius, true);
+    }
+}
+
+module bell_connection_bases(tolerance=0.0) {
+    bell_connection_base(-530, tolerance);
+    bell_connection_base(-340, tolerance);
+}
+
+module bell_connection_base(height, tolerance) {
+
+    cylinder_height=15; 
+    difference() {
+                    translate([0, -bell_radius_at_height(bell_polygon, height)-cylinder_height+5, height-4])
+                        rotate([-70,0,0])
+        scale([1,1,1])
+        cylinder(r2=8+tolerance, r1=1+tolerance, h=cylinder_height, $fn=4);  
+        solid_bell();
+        }
 }
 
 module small_tuning_slide_sleeve(wall_thickness) {
@@ -517,3 +577,10 @@ function cut_curve_at_height2(curve, min_height, max_height) =
         ]
     );
 
+function bell_radius_at_height(curve, height) =
+       [for (i = [1:1:len(curve)-1])
+            if( curve[i-1][1] <= height && curve[i][1] >= height)
+               curve[i][0]            
+        ][0]
+            ;
+    

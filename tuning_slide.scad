@@ -16,8 +16,6 @@ tuning_slide_step_length_in_degrees = 4;
 
 sweep_steps = 100;
 
-$fn=50;
-
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
 function circle_points (radius=1) = [ for (a=[0:tuning_slide_step_length_in_degrees:360]) radius*[sin(a), cos(a)]];    
