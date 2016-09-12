@@ -6,7 +6,7 @@ include <tuning_slide.scad>;
 //to create good tubes with than with sweep() like the tuning slide.
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
-slide_receiver_tolerance = 0.2;
+slide_receiver_tolerance = 0.1;
 
 slide_receiver_small_radius = 50/pi/2 + slide_receiver_tolerance;
 slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_tolerance;
@@ -92,11 +92,22 @@ rotate([180,0,0]) {
 //render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-410, max_height=-400);
 //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
 
-//bell section render
 //solid_bell();
-//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
-//render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
 
+//two part bell section render
+
+union() {
+    render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
+    upper_bell_connection_base();
+}
+union() {
+    render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
+    lower_bell_connection_base();
+}
+render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+
+
+//two part bell - for very high printers!
 /*union() {
     render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-580, max_height=-290);
     bell_connection_bases();
@@ -105,15 +116,15 @@ rotate([180,0,0]) {
 
 
 
-//translated_tuning_slide();
+translated_tuning_slide();
 
 //#check_slide_clearance(bell_thickness);
-//bottom_part_of_neckpipe(bell_thickness);
-//top_part_of_neckpipe(bell_thickness);
+bottom_part_of_neckpipe(bell_thickness);
+top_part_of_neckpipe(bell_thickness);
 //neckpipe(bell_thickness);
 //slide_receiver(bell_thickness);
 
-//bell_side_neckpipe_bell_connection();
+bell_side_neckpipe_bell_connection();
 tuning_slide_side_neckpipe_bell_connection();
 }
 
@@ -277,10 +288,7 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
         rotate([goose_neck_angle, 0, 0])
         slide_receiver(wall_thickness, solid);
     
-        for(i = [[-530, 22], [-350,25]]) {
-            
-    
-        }
+
     
     if(check_slide_clearance) {
         translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])    
@@ -312,9 +320,17 @@ module neckpipe_connection_base(translation, height, tolerance) {
 }
 
 module bell_connection_bases(tolerance=0.0) {
-    bell_connection_base(-530, tolerance);
-    bell_connection_base(-340, tolerance);
+    upper_bell_connection_base();
+    lower_bell_connection_base();
 }
+
+module upper_bell_connection_base(tolerance=0.0) {
+    bell_connection_base(-530, tolerance);
+}
+
+module lower_bell_connection_base(tolerance=0.0) {
+    bell_connection_base(-340, tolerance);
+}    
 
 module bell_connection_base(height, tolerance) {
 
@@ -387,7 +403,8 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     //render the joint to be glued
 
 
-    
+    echo(polygon[0]);
+        echo(polygon[len(polygon)-1]);
 
     rotate_extrude()
     if(render_top_lip && render_bottom_lip) {
@@ -572,7 +589,7 @@ function cut_curve_at_height2(curve, min_height, max_height) =
         [for (i = [0]) if(curve[i][1] <= max_height) curve[0]],
         [
         for (i = [1:1:len(curve)-1])
-            if( curve[i-1][1] <= max_height)
+            if( curve[i][1] <= max_height)
                curve[i]             
         ]
     );
