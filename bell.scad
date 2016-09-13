@@ -1,5 +1,3 @@
-//use <Bezier.scad>;
-
 use <array_iterator.scad>;
 
 //curve library to generate the neckpipe. Not ideal, but works for now and much easier
@@ -7,7 +5,7 @@ use <array_iterator.scad>;
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 
-$fn = 100;
+$fn = 300;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
@@ -24,6 +22,7 @@ slide_receiver_sleeve_length=25;//normally 25
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
 
+part = "tuning_slide_test_one";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 0.8;
 
@@ -92,46 +91,92 @@ bell_polygon = concat(
 
 rotate([180,0,0]) {
 
-//temporary render for a test
-//translate([0,0,400])
-//render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-410, max_height=-400);
-//render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
+    //temporary render for a test
+    //translate([0,0,400])
+    if(part == "tube_connector_test_top") {
+        render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-410, max_height=-400);
+    }
+    if(part == "tube_connector_test_bottom") {
+        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
+    }
+    if(part == "slide_receiver_test") {
+        slide_receiver(bell_thickness);
+    }
+    if(part == "tuning_slide_test_one") {
+        tuning_slide_test_one();
+    }
+    if(part == "tuning_slide_test_two") {
+        tuning_slide_test_two();
+    }
+    if(part == "connection_test_one") {
+        
+    }
+    if(part == "connection_test_two") {
+        
+    }
 
-//solid_bell();
+    //solid_bell();
 
-//three part bell section render
+    //three part bell section render
+    if(part == "all" || part == "bell_top") {
+        union() {
+            render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
+            upper_bell_connection_base();
+        }
+    }
+    if(part == "all" || part == "bell_middle") {
+        union() {
 
-union() {
-    render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
-    upper_bell_connection_base();
+            render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
+            lower_bell_connection_base();
+        }
+    }
+    if(part == "all" || part == "bell_bottom") {
+        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+    }
+
+
+    //two part bell - for very high printers!
+    /*union() {
+        render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-580, max_height=-290);
+        bell_connection_bases();
+    }*/
+    //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-290, max_height=0);
+
+
+    if(part == "all" || part == "tuning_slide") {
+        translated_tuning_slide();
+    }
+
+    //#check_slide_clearance(bell_thickness);
+    if(part == "all" || part == "neckpipe_bottom") {
+        bottom_part_of_neckpipe(bell_thickness);
+    }
+    if(part == "all" || part == "neckpipe_top") {
+        top_part_of_neckpipe(bell_thickness);
+    }
+    //neckpipe(bell_thickness);
+
+    if(part == "all" || part == "connection_bottom") {
+        bell_side_neckpipe_bell_connection();
+    }
+    if(part == "all" || part == "connection_top") {
+        tuning_slide_side_neckpipe_bell_connection();
+    }
 }
-union() {
-    render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
-    lower_bell_connection_base();
+
+module  tuning_slide_test_one() {
+    //print only the small tuning slide peg thing
+    intersection() {
+        tuning_slide();
+        translate([-50,-100,0])
+        cube(100);
+    }
 }
-render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
 
-
-//two part bell - for very high printers!
-/*union() {
-    render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-580, max_height=-290);
-    bell_connection_bases();
-}*/
-//render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-290, max_height=0);
-
-
-
-translated_tuning_slide();
-
-//#check_slide_clearance(bell_thickness);
-bottom_part_of_neckpipe(bell_thickness);
-top_part_of_neckpipe(bell_thickness);
-//neckpipe(bell_thickness);
-//slide_receiver(bell_thickness);
-
-bell_side_neckpipe_bell_connection();
-tuning_slide_side_neckpipe_bell_connection();
-}
+module  tuning_slide_test_two() {
+        small_tuning_slide_sleeve(bell_thickness);
+}    
 
 module check_slide_clearance(wall_thickness) {
     neckpipe_implementation(wall_thickness,
