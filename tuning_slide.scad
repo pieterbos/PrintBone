@@ -9,12 +9,12 @@ tuning_slide_large_length=67.32;
 tuning_slide_small_radius = 7.55;
 tuning_slide_large_radius = 9.9;
 
-tuning_bow_wall_thickness = 1.6;
-tuning_slide_wall_thickness = 0.7;
+tuning_bow_wall_thickness = 1.2;
+tuning_slide_wall_thickness = 0.6;
 
-tuning_slide_step_length_in_degrees = 360/$fn;
+tuning_slide_step_length_in_degrees = 4;
 
-sweep_steps = $fn;
+sweep_steps = 100;
 
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
