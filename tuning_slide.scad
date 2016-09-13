@@ -120,5 +120,3 @@ module tuning_slide_large_sleeve() {
         }
     };
 }
-
-tuning_slide(false);
