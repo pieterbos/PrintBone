@@ -1,6 +1,6 @@
 use <scad-utils/transformations.scad>;
 use <list-comprehension-demos/sweep.scad>;
-
+use <array_iterator.scad>;
 
 tuning_slide_length = 219.90;
 
@@ -12,18 +12,20 @@ tuning_slide_large_radius = 9.9;
 tuning_bow_wall_thickness = 1.6;
 tuning_slide_wall_thickness = 0.7;
 
-tuning_slide_step_length_in_degrees = 4;
+tuning_slide_step_length_in_degrees = 360/$fn;
 
-sweep_steps = 100;
+sweep_steps = $fn;
 
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
-function circle_points (radius=1) = [ for (a=[0:tuning_slide_step_length_in_degrees:360]) radius*[sin(a), cos(a)]];    
+function circle_points (radius=1) = [ for (a=array_iterator(0,tuning_slide_step_length_in_degrees,360)) radius*[sin(a), cos(a)]];    
     
 pi = 3.14159265359;
 
 
 tuning_slide_radius = tuning_slide_length/pi;
+
+
 
 function rotate_path(t) = [
     0,//tuning_slide_radius * cos(360 * t),
@@ -37,6 +39,7 @@ function tuning_slide_transform(transform, scale_increase) =
         1+scale_increase*i/len(transform),
         1])//do not scale the length of the tuning slide
 ];
+
 
 /*
     Small side insert that fixes a problem with the sweep() module
@@ -74,7 +77,7 @@ module tuning_slide(solid=false) {
 
 module tuning_slide_bow(solid=false) {
     step = 0.5/sweep_steps;
-    path = [for (t=[0:step:0.5+step]) rotate_path(t)];
+    path = [for (t=array_iterator(0, step, 0.5+step)) rotate_path(t)];
     path_transforms = construct_transform_path(path);
 
     if(solid) {

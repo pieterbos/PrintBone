@@ -1,10 +1,15 @@
 //use <Bezier.scad>;
-//tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
-include <tuning_slide.scad>;
+
+use <array_iterator.scad>;
 
 //curve library to generate the neckpipe. Not ideal, but works for now and much easier
 //to create good tubes with than with sweep() like the tuning slide.
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
+
+
+$fn = 100;
+//tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
+include <tuning_slide.scad>;
 
 slide_receiver_tolerance = 0.1;
 
@@ -54,27 +59,27 @@ inner_lip = [[lip_start+lip_offset, 0], [lip_start+lip_slant +lip_offset, lip_le
 
 total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
 
-$fn = 100;
-
-//flare = 0.7;
+tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
 //steps of the bessel curve for loop
 steps=100;
-echo(total_bell_height);
+    
+
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_polygon = concat(
             //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
             //the tuning slide of 10.53 - 9.9!
             [
-            [10.53, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length],
-            [10.53, -55.93-96.85-150.42-150.42-53.36]
+                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length + tuning_sleeve_extra_length],
+                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36]
             //[
             ],
              //this is equivalent to   conic_tube(h=53.36, r1=10.53, r2=11.05, wall=bell_thickness);
-            [[11.05, -55.93-96.85-150.42-150.42], 
-           // [
-            [10.53, -55.93-96.85-150.42-150.42-53.36]],
-    
+            [
+                [11.05, -55.93-96.85-150.42-150.42], 
+                [10.53, -55.93-96.85-150.42-150.42-53.36]
+            ],
+   
             2d_bessel_polygon(translation=-55.93-96.85-150.42,  throat_radius=11.05, mouth_radius=15.07, length=150.42, flare=1.260),
             2d_bessel_polygon(translation=-55.93-96.85, throat_radius=15.07, mouth_radius=22.28, length=150.42, flare=0.894),
         2d_bessel_polygon(translation=-55.93, throat_radius=22.28, mouth_radius=41.18, length=96.85, flare=0.494),
@@ -94,7 +99,7 @@ rotate([180,0,0]) {
 
 //solid_bell();
 
-//two part bell section render
+//three part bell section render
 
 union() {
     render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
@@ -402,7 +407,7 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     
     //render the joint to be glued
 
-
+    echo("start and end of polygon: " );
     echo(polygon[0]);
         echo(polygon[len(polygon)-1]);
 
@@ -512,23 +517,33 @@ module extrude_solid(curve) {
     );
 }
 
-module extrude_line(curve, wall_thickness) {
+EPSILON = 0.00000001;
+function abs_diff(o1, o2) =
+    abs(o1-o2);
+    
+//from a single line, make a wall_thickness wide 2d polygon.
+//translates along the normal vector without checking direction, so be careful :)steps
+module extrude_line(input_curve, wall_thickness) {
+    //remove consecutive points that are the same. Can't have that here or we'll have very strange results
+    extrude_curve = concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]);
 
-//    translate([ 0, translation, 0])
     polygon( points=
        concat(
-        curve,
-        [curve[len(curve)-1]+[wall_thickness, 0]],
-        [for (i = [len(curve)-1:-1:1]) 
-            curve[i] + 
-            unit_normal_vector(
-                curve[i-1],
-                curve[i]
-            )*wall_thickness
+        [extrude_curve[0]],
+        [for (i = [1:1:len(extrude_curve)-1]) 
+                extrude_curve[i]
+        ],
+        [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]],
+        [for (i = [len(extrude_curve)-1:-1:1]) 
+                extrude_curve[i] + 
+                unit_normal_vector(
+                    extrude_curve[i-1],
+                    extrude_curve[i]
+                )*wall_thickness
         ],
         //add the top most part, make sure it ends with a horizontal edge
         //so it can be joined to another surface if needed.
-        [curve[0]+[wall_thickness,0]]
+        [extrude_curve[0]+[wall_thickness,0]]
         )
        
     );
@@ -544,9 +559,11 @@ function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, f
         step_size = (length-x_zero)/steps
     )
 
-    [for (i = [x_zero: step_size :x_zero+length]) 
+
+    [for (i = array_iterator(x_zero, step_size, x_zero + length)) 
          [bell_diameter(b, i, flare), i-(x_zero+length)] + [0, translation]
     ];
+
 
 function bell_diameter(B, y, a) =
 //   B/pow(y + y_zero,a);
