@@ -99,7 +99,7 @@ module tuning_slide_bow(solid=false) {
 
 
 module tuning_slide_small_sleeve() {
-    translate([0, 0, -tuning_slide_radius]) {
+    translate([0, 0, -tuning_slide_radius]) { 
         rotate([90,0, 0]) {
             difference() {
                 cylinder(r=tuning_slide_small_radius+tuning_slide_wall_thickness, h=tuning_slide_small_length);
@@ -120,3 +120,5 @@ module tuning_slide_large_sleeve() {
         }
     };
 }
+
+//tuning_slide(false);

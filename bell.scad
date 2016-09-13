@@ -5,7 +5,7 @@ use <array_iterator.scad>;
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 
-$fn = 300;
+$fn = 50;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
@@ -22,7 +22,7 @@ slide_receiver_sleeve_length=25;//normally 25
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
 
-part = "tuning_slide_test_two";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "tuning_slide";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 0.8;
 
@@ -144,8 +144,11 @@ rotate([180,0,0]) {
     //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-290, max_height=0);
 
 
-    if(part == "all" || part == "tuning_slide") {
+    if(part == "all") {
         translated_tuning_slide();
+    }
+    if(part == "tuning_slide") {
+        tuning_slide();
     }
 
     //#check_slide_clearance(bell_thickness);
