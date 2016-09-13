@@ -12,9 +12,10 @@ tuning_slide_large_radius = 9.9;
 tuning_bow_wall_thickness = 1.2;
 tuning_slide_wall_thickness = 0.6;
 
-tuning_slide_step_length_in_degrees = 4;
+tuning_slide_step_length_in_degrees = 1;
 
-sweep_steps = 100;
+$fn=200;
+sweep_steps = 200;
 
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
@@ -57,8 +58,9 @@ module tuning_slide_small_insert() {
 /*
     large side insert that fixes a problem with the sweep() module
 */
+
 module tuning_slide_large_insert() {
-    translate([0, 0.2, tuning_slide_radius]) {
+    translate([0, 0.1, tuning_slide_radius]) {
         rotate([90,0,0]) {
             linear_extrude(height=0.45) {
                 circle(tuning_slide_large_radius);                        
@@ -77,10 +79,10 @@ module tuning_slide(solid=false) {
 
 module tuning_slide_bow(solid=false) {
     step = 0.5/sweep_steps;
-    path = [for (t=array_iterator(0, step, 0.5+step)) rotate_path(t)];
+    path = [for (t=array_iterator(0, step, 0.5)) rotate_path(t)];
     path_transforms = construct_transform_path(path);
 
-    if(solid) {
+    if(!solid) {
         difference() {
             sweep(circle_points(tuning_slide_small_radius+ tuning_bow_wall_thickness), tuning_slide_transform(path_transforms, 0.3));
             sweep(circle_points(tuning_slide_small_radius), tuning_slide_transform(path_transforms, 0.3));
@@ -118,3 +120,5 @@ module tuning_slide_large_sleeve() {
         }
     };
 }
+
+tuning_slide(false);
