@@ -5,10 +5,11 @@ use <array_iterator.scad>;
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 
-$fn = 50;
+$fn = 100;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
+$fn = 100;
 slide_receiver_tolerance = 0.1;
 
 slide_receiver_small_radius = 50/pi/2 + slide_receiver_tolerance;
@@ -22,9 +23,13 @@ slide_receiver_sleeve_length=25;//normally 25
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
 
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 0.8;
+joint_extra_thickness = 1.2;
+joint_length = 10; //length of the glue joint
+joint_overlap = 5; //length that the joint sleeve overlaps the bell
+
 
 joint_width = 6.5;
 joint_depth = 9;
@@ -57,6 +62,8 @@ lip = [[lip_start, 0], [lip_start+lip_slant, lip_length], [lip_end-lip_slant, li
 inner_lip = [[lip_start+lip_offset, 0], [lip_start+lip_slant +lip_offset, lip_length-lip_offset], [lip_end-lip_slant-lip_offset, lip_length-lip_offset], [lip_end-lip_offset, 0]];
 
 total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
+
+echo(total_bell_height);
 
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
@@ -446,9 +453,7 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     //TODO: this seems to bewithout the tuning slide cylinder on top!
          
     
-    polygon = cut_curve_at_height2( //bell_polygon,
-            cut_curve_at_height(bell_polygon, min_height, max_height)
-        , min_height, max_height);
+    polygon = cut_curve(bell_polygon, min_height, max_height);
 
     //TODO: cut polygon at desired height and start at desired height
     //for the current part
@@ -462,20 +467,22 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     rotate_extrude()
     if(render_top_lip && render_bottom_lip) {
         union() {
-            bottom_joint(polygon);
-            top_joint(polygon);
+            flat_bottom_joint(bell_polygon, min_height, max_height);
+//            top_joint(polygon);
             extrude_line(polygon, bell_thickness);
         }
     }
     else if(render_top_lip) {
-        union() {
+
+        extrude_line(polygon, bell_thickness);
+//        union() {
                 /* render the connecting lip on top of the polygon */
-            top_joint(polygon);
-            extrude_line(polygon, bell_thickness);
-        };
+          //  top_joint(polygon);
+            
+  //      };
     } else if (render_bottom_lip) {
         union() {
-            bottom_joint(polygon);
+            flat_bottom_joint(bell_polygon, min_height, max_height);
             extrude_line(polygon, bell_thickness);
         }
     } else {
@@ -485,6 +492,11 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
   //  translate(polygon[0] + [0,-1])
 //        polygon(inner_lip);
 }
+
+function cut_curve(curve, min_height, max_height) = 
+    cut_curve_at_height2( //bell_polygon,
+        cut_curve_at_height(bell_polygon, min_height, max_height)
+        , min_height, max_height);
 
 module solid_bell() {
     rotate_extrude()   
@@ -520,6 +532,14 @@ module bottom_joint(polygon) {
         };
         extrude_solid(polygon);
     };
+}
+
+module flat_bottom_joint(full_curve, min_height, max_height) {
+   curve = cut_curve(full_curve, max_height-joint_overlap, max_height+joint_length);
+    difference() {
+        extrude_line(curve, bell_thickness + joint_extra_thickness);
+        extrude_line(curve, bell_thickness);
+    }
 }
 
 //bessel_curve(throat_radius=10.51, mouth_radius=108.06, length=-(-55.93-96.85-150.42-150.42), flare=0.78);
