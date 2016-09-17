@@ -22,7 +22,7 @@ slide_receiver_sleeve_length=25;//normally 25
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
 
-part = "tuning_slide";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 0.8;
 

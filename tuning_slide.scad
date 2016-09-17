@@ -14,6 +14,9 @@ tuning_slide_wall_thickness = 0.6;
 
 tuning_slide_step_length_in_degrees = 1;
 
+//the height of the mid-air raft that the slicer will add support to for stability
+tuning_slide_support_height=0.2;
+
 $fn=200;
 sweep_steps = 200;
 
@@ -26,8 +29,16 @@ pi = 3.14159265359;
 
 tuning_slide_radius = tuning_slide_length/pi;
 
+rotate([-90,0,0])
+tuning_slide();
 
-
+module tuning_slide(solid = false) {
+    union() {
+        tuning_slide_no_support(solid);
+        tuning_slide_support_small();
+        tuning_slide_support_large();
+    }
+}
 function rotate_path(t) = [
     0,//tuning_slide_radius * cos(360 * t),
     tuning_slide_radius * sin(360 * t),
@@ -55,6 +66,34 @@ module tuning_slide_small_insert() {
     };
 }
 
+
+module tuning_slide_support_small() {
+    difference() {
+        translate([0, 0, -tuning_slide_radius-tuning_slide_small_radius*2+4]) {
+            rotate([90,0,0]) {
+                linear_extrude(height=tuning_slide_support_height) {
+                    square([tuning_slide_small_radius, tuning_slide_small_radius*2], center=true);                        
+                }
+            }
+        };
+        tuning_slide_no_support(solid=true);
+    }
+}
+
+module tuning_slide_support_large() {
+    difference() {
+        translate([0, 0, tuning_slide_radius+tuning_slide_large_radius*2-4]) {
+            rotate([90,0,0]) {
+                linear_extrude(height=tuning_slide_support_height) {
+                    square([tuning_slide_small_radius, tuning_slide_small_radius*2], center=true);                        
+                }
+            }
+        };
+        tuning_slide_no_support(solid=true);
+    }
+}
+
+
 /*
     large side insert that fixes a problem with the sweep() module
 */
@@ -69,11 +108,11 @@ module tuning_slide_large_insert() {
     };
 }
 
-module tuning_slide(solid=false) {
+module tuning_slide_no_support(solid=false) {
     
     tuning_slide_bow(solid);
-    tuning_slide_small_sleeve();
-    tuning_slide_large_sleeve();
+    tuning_slide_small_sleeve(solid);
+    tuning_slide_large_sleeve(solid);
     
 }
 
@@ -98,24 +137,33 @@ module tuning_slide_bow(solid=false) {
 }
 
 
-module tuning_slide_small_sleeve() {
+module tuning_slide_small_sleeve(solid=false) {
     translate([0, 0, -tuning_slide_radius]) { 
         rotate([90,0, 0]) {
-            difference() {
-                cylinder(r=tuning_slide_small_radius+tuning_slide_wall_thickness, h=tuning_slide_small_length);
-                cylinder(r=tuning_slide_small_radius, h=tuning_slide_small_length);
+            if(solid) {
+                    cylinder(r=tuning_slide_small_radius+tuning_slide_wall_thickness, h=tuning_slide_small_length);
+            } else {
+                difference() {
+                    cylinder(r=tuning_slide_small_radius+tuning_slide_wall_thickness, h=tuning_slide_small_length);
+                    cylinder(r=tuning_slide_small_radius, h=tuning_slide_small_length);
+                }
             }
         }
+        
     };
 }
 
-module tuning_slide_large_sleeve() {
+module tuning_slide_large_sleeve(solid=false) {
      //large end of the tuning slide
     translate([0, 0, tuning_slide_radius]) {
         rotate([90,0, 0]) {
-            difference() {
-                cylinder(r=tuning_slide_large_radius+tuning_slide_wall_thickness, h=tuning_slide_large_length);
-                cylinder(r=tuning_slide_large_radius, h=tuning_slide_large_length);
+            if(solid) {
+                  cylinder(r=tuning_slide_large_radius+tuning_slide_wall_thickness, h=tuning_slide_large_length);
+            } else {
+                difference() {
+                    cylinder(r=tuning_slide_large_radius+tuning_slide_wall_thickness, h=tuning_slide_large_length);
+                    cylinder(r=tuning_slide_large_radius, h=tuning_slide_large_length);
+                }
             }
         }
     };
