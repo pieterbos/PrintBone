@@ -5,12 +5,14 @@ use <array_iterator.scad>;
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 
-$fn = 100;
+$fn = 300;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
-$fn = 100;
-slide_receiver_tolerance = 0.1;
+$fn = 300;
+slide_receiver_tolerance = -0.02;
+
+connection_base_clearance = 0.15;
 
 slide_receiver_small_radius = 50/pi/2 + slide_receiver_tolerance;
 slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_tolerance;
@@ -22,14 +24,20 @@ slide_receiver_sleeve_length=25;//normally 25
 
 slide_receiver_length=31.5 + slide_receiver_tolerance;
 
+// the thumb brace should be positioned for easy holding, so close to the slide
+neckpipe_bell_connection_height = -330;
 
-part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connection_test_bottom;tube_connection_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+render_neckpipe_bases = true;
 
-bell_thickness = 0.8;
+part = "bell_bottom_2";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+
+bell_thickness = 1.2;
+
+bell_thickness_2 = 1.6;
 joint_extra_thickness = 1.2;
-joint_length = 10; //length of the glue joint
-joint_overlap = 5; //length that the joint sleeve overlaps the bell
-
+joint_length = 5; //length of the glue joint
+joint_overlap = 3; //length that the joint sleeve overlaps the bell
+joint_clearance = 0.13; //we need some joint clearance, obviously
 
 joint_width = 6.5;
 joint_depth = 9;
@@ -45,7 +53,7 @@ lip_length=7;
 //difference in size between the joint outer and inner lip
 //so they can fit together without requiring too much use of sandpaper
 // i need better words for this :)
-lip_offset = 0.2;
+lip_offset = 0.1;
 
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
 tuning_slide_spacing = 0.2;
@@ -68,8 +76,13 @@ echo(total_bell_height);
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
 //steps of the bessel curve for loop
-steps=100;
+steps=500;
     
+    
+first_bell_cut = -35;
+second_bell_cut = first_bell_cut - 185;
+third_bell_cut = second_bell_cut - 185;
+fourth_bell_cut = third_bell_cut - 185;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_polygon = concat(
@@ -124,22 +137,51 @@ rotate([180,0,0]) {
 
     //solid_bell();
 
+
+
     //three part bell section render
+    
     if(part == "all" || part == "bell_top") {
         union() {
-            render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-570, max_height=-380);
+            render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=fourth_bell_cut, max_height=third_bell_cut);
             upper_bell_connection_base();
         }
     }
-    if(part == "all" || part == "bell_middle") {
+    
+    if(part == "all" || part == "bell_middle_2") {
         union() {
-
-            render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=-380, max_height=-190);
-            lower_bell_connection_base();
+            render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=third_bell_cut, max_height=second_bell_cut);
+          lower_bell_connection_base();
         }
     }
-    if(part == "all" || part == "bell_bottom") {
-        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+    if(part == "all" || part == "bell_middle") {
+        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=second_bell_cut, max_height=first_bell_cut,render_flat_bottom_lip=true);
+          //TODO: move
+    }
+    if(part == "all" || part == "bell_bottom_2") {
+        intersection() {
+            render_bell_bottom();
+            translate([-120,-120,-200])
+            cube([210, 250, 200]);
+        }
+    }
+    
+    if(part == "all" || part == "bell_bottom_1") {
+
+        intersection() {
+            render_bell_bottom();
+            translate([-120+210,-120,-200])
+            cube([210, 250, 200]);
+        }
+    }
+    
+    if(part == "bell_bottom") {
+
+        intersection() {
+            render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+            translate([80,-120,-200])
+            cube([200, 250, 200]);
+        }
     }
 
 
@@ -152,7 +194,7 @@ rotate([180,0,0]) {
 
 
     if(part == "all") {
-        translated_tuning_slide();
+//        translated_tuning_slide();
     }
     if(part == "tuning_slide") {
         tuning_slide();
@@ -165,13 +207,53 @@ rotate([180,0,0]) {
     if(part == "all" || part == "neckpipe_top") {
         top_part_of_neckpipe(bell_thickness);
     }
-    //neckpipe(bell_thickness);
+    if(part == "neckpipe") {        
+        rotate([-90,0,0]) {
+            neckpipe(bell_thickness);
+            bell_side_neckpipe_bell_connection();
+            tuning_slide_side_neckpipe_bell_connection();
+        }
+    }
+
+    if(part == "test_1") {
+        intersection() {
+            translate([0, 500,-150])
+            rotate([-90,0,0]) {
+        top_part_of_neckpipe(bell_thickness);
+
+            };
+                    translate([-50,12,-75])
+            cube(100);
+        }
+    }
+    
+    if(part == "test_2") {
+
+
+                intersection() {
+                bell_side_neckpipe_bell_connection();
+            translate([-50,-220,-375])
+                                cube(100);
+
+        }
+    }
+    
 
     if(part == "all" || part == "connection_bottom") {
         bell_side_neckpipe_bell_connection();
     }
     if(part == "all" || part == "connection_top") {
         tuning_slide_side_neckpipe_bell_connection();
+    }
+}
+
+module render_bell_bottom() {
+    union() {
+        //TODO: stuk!
+        rotate_extrude() 
+        polygon([ [0, -210], [35, -210], [50, -200]]);
+
+        render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=first_bell_cut, max_height=0);
     }
 }
 
@@ -239,7 +321,7 @@ module slide_receiver(wall_thickness, solid = false) {
 }
 
 module bell_side_neckpipe_bell_connection() {
-    neckpipe_bell_connection(-340);
+    neckpipe_bell_connection(neckpipe_bell_connection_height);
 }
 
 module tuning_slide_side_neckpipe_bell_connection() {
@@ -257,7 +339,7 @@ module neckpipe_bell_connection(height) {
             solid_neckpipe(bell_thickness);
             solid_bell();
 
-            connection_bases(0.2);
+            connection_bases(connection_base_clearance);
         }        
      
 
@@ -366,15 +448,15 @@ module connection_bases(tolerance=0.0) {
 
 module neckpipe_connection_bases(tolerance=0.0) {
     neckpipe_connection_base(19, -530, tolerance);
-    neckpipe_connection_base(16, -340, tolerance);
+    neckpipe_connection_base(16, neckpipe_bell_connection_height, tolerance);
 }
 
 module neckpipe_connection_base(translation, height, tolerance) {
     difference() {
         translate([0,-tuning_slide_radius*2+translation, height-3])
-        rotate([75,0,0])
+        rotate([70,0,0])
         scale([1,1,1])
-        cylinder(r2=8+tolerance, r1=1+tolerance, h=16, $fn=4);  
+        cylinder(r2=6.3+tolerance, r1=3+tolerance, h=19, $fn=8);  
         neckpipe_implementation(bell_thickness, neck_pipe_radius, true);
     }
 }
@@ -389,14 +471,14 @@ module upper_bell_connection_base(tolerance=0.0) {
 }
 
 module lower_bell_connection_base(tolerance=0.0) {
-    bell_connection_base(-340, tolerance);
+    bell_connection_base(neckpipe_bell_connection_height, tolerance);
 }    
 
 module bell_connection_base(height, tolerance) {
 
     cylinder_height=15; 
     difference() {
-                    translate([0, -bell_radius_at_height(bell_polygon, height)-cylinder_height+5, height-4])
+                    translate([0, -bell_radius_at_height(bell_polygon, height-4)-cylinder_height+5, height-4])
                         rotate([-70,0,0])
         scale([1,1,1])
         cylinder(r2=8+tolerance, r1=1+tolerance, h=cylinder_height, $fn=4);  
@@ -432,7 +514,7 @@ module solid_small_tuning_slide_sleeve(wall_thickness) {
     //TODO: at the bottom, slant towards the neckpipe or we will not have a good connection!
 }
 
-module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_height) {
+module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_height, render_flat_bottom_lip=false) {
     //rath R4 profile
     
     // leadpipe 26.145 mouthpiece ends at 0.664 mm
@@ -465,30 +547,18 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
         echo(polygon[len(polygon)-1]);
 
     rotate_extrude()
-    if(render_top_lip && render_bottom_lip) {
-        union() {
+    union() {
+        extrude_line(polygon, bell_thickness_2);
+        if(render_top_lip) {
+            top_joint(polygon);                
+        };
+        if(render_bottom_lip) {
+            bottom_joint(polygon); 
+        }            
+        if (render_flat_bottom_lip) {
             flat_bottom_joint(bell_polygon, min_height, max_height);
-//            top_joint(polygon);
-            extrude_line(polygon, bell_thickness);
-        }
+        } 
     }
-    else if(render_top_lip) {
-
-        extrude_line(polygon, bell_thickness);
-//        union() {
-                /* render the connecting lip on top of the polygon */
-          //  top_joint(polygon);
-            
-  //      };
-    } else if (render_bottom_lip) {
-        union() {
-            flat_bottom_joint(bell_polygon, min_height, max_height);
-            extrude_line(polygon, bell_thickness);
-        }
-    } else {
-        extrude_line(polygon, bell_thickness);
-    };
-
   //  translate(polygon[0] + [0,-1])
 //        polygon(inner_lip);
 }
@@ -504,31 +574,51 @@ module solid_bell() {
 }
 
 module bell_profile() {
-    extrude_solid(bell_polygon, bell_thickness);
+    extrude_solid(bell_polygon, bell_thickness_2);
 }
 
 
 
-module top_joint(polygon) {
+module top_joint(polygon, rotate=true) {
+
     difference() {
         translate(polygon[0]) {
-            difference() {
-                polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
-                polygon(lip);
-            };    
+            if(rotate) {
+                union() {
+                    polygon([[0, 0], [0, joint_slanted_bottom], [0, joint_depth], [joint_width, 0]]);
+//                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
+                    rotate([0,180,180])
+                    polygon(inner_lip);
+                };
+            } else {
+                difference() {
+                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
+                    polygon(lip);
+                };
+            };
         };
         extrude_solid(polygon);
     };
 }
 
-module bottom_joint(polygon) {
+
+module bottom_joint(polygon, rotate=true) {
     difference() {
         translate(polygon[len(polygon)-1]) {
-            union() {    
-              polygon([[0, 0], [0, -joint_slanted_bottom], [0, -joint_depth], [joint_width, 0]]);              
-                polygon(inner_lip);
-            }
+            if(rotate) {
+                difference() {
+                    rotate([0,180,180])
+                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
+                rotate([0,180,180])
+                  polygon(lip);
+                }
+            } else {           
+                union() {    
+                  polygon([[0, 0], [0, -joint_slanted_bottom], [0, -joint_depth], [joint_width, 0]]);
+                  polygon(inner_lip);
+                }
   
+            }
         };
         extrude_solid(polygon);
     };
@@ -536,11 +626,19 @@ module bottom_joint(polygon) {
 
 module flat_bottom_joint(full_curve, min_height, max_height) {
    curve = cut_curve(full_curve, max_height-joint_overlap, max_height+joint_length);
-    difference() {
-        extrude_line(curve, bell_thickness + joint_extra_thickness);
-        extrude_line(curve, bell_thickness);
+   //TODO: nice smooth edge difference() {
+    //    polygon([curve[0]+10, [0, curve[0][1]-2000], [0, curve[0][1]]]);
+  //      bell_profile();
+//    }
+    union() {
+        difference() {
+            extrude_line(curve, bell_thickness_2 + joint_extra_thickness);
+            extrude_line(curve, bell_thickness_2 + joint_clearance);
+        }
+//        polygon(curve[0]
     }
 }
+
 
 //bessel_curve(throat_radius=10.51, mouth_radius=108.06, length=-(-55.93-96.85-150.42-150.42), flare=0.78);
 /* 
@@ -571,7 +669,7 @@ module bessel_curve2(translation=0, throat_radius, mouth_radius, length, flare) 
 
    2d_bessel = 2d_bessel_polygon(translation, throat_radius, mouth_radius, length, flare);
 
-    extrude_line(2d_bessel, bell_thickness);   
+    extrude_line(2d_bessel, bell_thickness_2);   
 
 }
 
@@ -590,17 +688,15 @@ function abs_diff(o1, o2) =
     abs(o1-o2);
     
 //from a single line, make a wall_thickness wide 2d polygon.
-//translates along the normal vector without checking direction, so be careful :)steps
+//translates along the normal vector without checking direction, so be careful :)
 module extrude_line(input_curve, wall_thickness) {
     //remove consecutive points that are the same. Can't have that here or we'll have very strange results
     extrude_curve = concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]);
 
     polygon( points=
        concat(
-        [extrude_curve[0]],
-        [for (i = [1:1:len(extrude_curve)-1]) 
-                extrude_curve[i]
-        ],
+        extrude_curve,
+        
         [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]],
         [for (i = [len(extrude_curve)-1:-1:1]) 
                 extrude_curve[i] + 
@@ -617,6 +713,31 @@ module extrude_line(input_curve, wall_thickness) {
     );
 }
 
+//from a single line, make a cone outside line
+//translates along the normal vector without checking direction, so be careful :)
+module extrude_cone(input_curve, wall_thickness) {
+    //remove consecutive points that are the same. Can't have that here or we'll have very strange results
+    extrude_curve = concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]);
+
+    polygon( points=
+       concat(
+        extrude_curve,
+        [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]],
+        
+        [for (i = [len(extrude_curve)-220:-1:1]) 
+                extrude_curve[i] + 
+                unit_normal_vector(
+                    extrude_curve[i-1],
+                    extrude_curve[i]
+                )*wall_thickness
+        ],
+        //add the top most part, make sure it ends with a horizontal edge
+        //so it can be joined to another surface if needed.
+        [extrude_curve[0]+[wall_thickness,0]]
+        )
+       
+    );
+}
 
 function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, flare) =    
 
@@ -624,9 +745,8 @@ function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, f
     let(
         b = bessel_b_parameter(throat_radius, mouth_radius, length, flare),
         x_zero = bessel_x_zero_parameter(throat_radius, b, flare),
-        step_size = (length-x_zero)/steps
+        step_size = (length)/steps
     )
-
 
     [for (i = array_iterator(x_zero, step_size, x_zero + length)) 
          [bell_diameter(b, i, flare), i-(x_zero+length)] + [0, translation]

@@ -10,15 +10,16 @@ tuning_slide_small_radius = 7.55;
 tuning_slide_large_radius = 9.9;
 
 tuning_bow_wall_thickness = 1.2;
-tuning_slide_wall_thickness = 0.6;
+tuning_slide_wall_thickness = 0.8;
 
-tuning_slide_step_length_in_degrees = 16;
+tuning_slide_step_length_in_degrees = 1;
 
 //the height of the mid-air raft that the slicer will add support to for stability
 tuning_slide_support_height=0.2;
 
-$fn=20;
-sweep_steps = 20;
+$fn=200;
+sweep_steps = 200;
+
 
 tuning_slide_scale_increase = (tuning_slide_large_radius/tuning_slide_small_radius)-1;
 
