@@ -10,6 +10,10 @@ $fn = 300;
 include <tuning_slide.scad>;
 
 $fn = 300;
+
+
+bell_radius = 108.60;
+
 slide_receiver_tolerance = -0.02;
 
 connection_base_clearance = 0.15;
@@ -29,11 +33,11 @@ neckpipe_bell_connection_height = -330;
 
 render_neckpipe_bases = true;
 
-part = "bell_bottom_2";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "neckpipe_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
-bell_thickness = 1.2;
+bell_thickness = 1.6;
 
-bell_thickness_2 = 1.6;
+bell_thickness_2 = 1.2;
 joint_extra_thickness = 1.2;
 joint_length = 5; //length of the glue joint
 joint_overlap = 3; //length that the joint sleeve overlaps the bell
@@ -56,7 +60,7 @@ lip_length=7;
 lip_offset = 0.1;
 
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
-tuning_slide_spacing = 0.2;
+tuning_slide_spacing = 0.1;
 
 neck_pipe_length = 269.10;
 neck_pipe_radius = 7.25;
@@ -80,7 +84,7 @@ steps=500;
     
     
 first_bell_cut = -35;
-second_bell_cut = first_bell_cut - 185;
+second_bell_cut = -185;
 third_bell_cut = second_bell_cut - 185;
 fourth_bell_cut = third_bell_cut - 185;
 
@@ -102,7 +106,7 @@ bell_polygon = concat(
             2d_bessel_polygon(translation=-55.93-96.85-150.42,  throat_radius=11.05, mouth_radius=15.07, length=150.42, flare=1.260),
             2d_bessel_polygon(translation=-55.93-96.85, throat_radius=15.07, mouth_radius=22.28, length=150.42, flare=0.894),
         2d_bessel_polygon(translation=-55.93, throat_radius=22.28, mouth_radius=41.18, length=96.85, flare=0.494),
-        2d_bessel_polygon(throat_radius=41.18, mouth_radius=108.60, length=55.93, flare=1.110)
+        2d_bessel_polygon(throat_radius=41.18, mouth_radius=bell_radius, length=55.93, flare=1.110)
     );
 
 //TODO minor: the tuning slide of a real trombone is straight, then
@@ -197,7 +201,7 @@ rotate([180,0,0]) {
 //        translated_tuning_slide();
     }
     if(part == "tuning_slide") {
-        tuning_slide();
+        //tuning_slide();
     }
 
     //#check_slide_clearance(bell_thickness);
@@ -248,12 +252,16 @@ rotate([180,0,0]) {
 }
 
 module render_bell_bottom() {
+    
+    extra_height  = 0.87; //TODO: get exact height from bell_polygon
     union() {
-        //TODO: stuk!
-        rotate_extrude() 
-        polygon([ [0, -210], [35, -210], [50, -200]]);
-
         render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=first_bell_cut, max_height=0);
+
+    /* difference() {
+                rotate_extrude() 
+                polygon([ [55, -1], [bell_radius+1, -1], [60, first_bell_cut-extra_height], [55, first_bell_cut-extra_height]]);
+                solid_bell();
+        }*/
     }
 }
 
@@ -267,7 +275,12 @@ module  tuning_slide_test_one() {
 }
 
 module  tuning_slide_test_two() {
-        small_tuning_slide_sleeve(bell_thickness);
+
+        intersection() {
+            small_tuning_slide_sleeve(bell_thickness);
+            translate([-200,-200,-1050])
+            cube(500);
+        }
 }    
 
 module check_slide_clearance(wall_thickness) {
@@ -355,7 +368,7 @@ module bottom_part_of_neckpipe(wall_thickness) {
     translate([0, -tuning_slide_radius*2, -480])
     rotate_extrude()
     
-    top_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]]);
+    top_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true);
 }
 
 
@@ -369,7 +382,7 @@ module top_part_of_neckpipe(wall_thickness) {
     translate([0, -tuning_slide_radius*2, -670+190-bottom_joint_height])
     rotate_extrude()
     
-    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]]);
+    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true);
 }
 
 module neckpipe(wall_thickness) {
@@ -385,7 +398,7 @@ module neckpipe(wall_thickness) {
 
 //a solid neckpipe. useful in difference with some other things
 module solid_neckpipe(wall_thickness) {
-    neckpipe_implementation(wall_thickness, neck_pipe_radius, true);
+    neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=true);
     connection_bases();
 }
 
@@ -486,32 +499,26 @@ module bell_connection_base(height, tolerance) {
         }
 }
 
-module small_tuning_slide_sleeve(wall_thickness) {
+module small_tuning_slide_sleeve(wall_thickness, solid=false) {
     translate([0, -tuning_slide_radius *2, total_bell_height-tuning_slide_small_length])
     difference() {
         cylinder(h = tuning_slide_small_length + tuning_sleeve_extra_length, r = tuning_slide_small_radius + tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
-        cylinder(h = tuning_slide_small_length + tuning_sleeve_extra_length, r = tuning_slide_small_radius + tuning_slide_wall_thickness + tuning_slide_spacing);
+        if(!solid) {
+            cylinder(h = tuning_slide_small_length + tuning_sleeve_extra_length, r =    tuning_slide_small_radius + tuning_slide_wall_thickness + tuning_slide_spacing);
+        }
     };
     
     translate([0, -tuning_slide_radius *2, total_bell_height])
     difference() {
         cylinder(h=20, r2=neck_pipe_radius+wall_thickness, r1=tuning_slide_small_radius + +tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
-        cylinder(h=20, r=neck_pipe_radius);
+        if(!solid) {
+            cylinder(h=20, r=neck_pipe_radius);
+        }
     }
-    //TODO: at the bottom, slant towards the neckpipe or we will not have a good connection!
 }
 
 module solid_small_tuning_slide_sleeve(wall_thickness) {
-    translate([0, -tuning_slide_radius *2, total_bell_height-tuning_slide_small_length])
-
-    cylinder(h = tuning_slide_small_length + tuning_sleeve_extra_length, r = tuning_slide_small_radius + tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
-    
-    translate([0, -tuning_slide_radius *2, total_bell_height])
-
-    cylinder(h=10, r2=neck_pipe_radius+wall_thickness, r1=tuning_slide_small_radius + +tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
-
-
-    //TODO: at the bottom, slant towards the neckpipe or we will not have a good connection!
+    small_tuning_slide_sleeve(wall_thickness, solid=true);
 }
 
 module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_height, render_flat_bottom_lip=false) {
@@ -520,20 +527,7 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     // leadpipe 26.145 mouthpiece ends at 0.664 mm
     // 0.695 inner slide diameter, 139.439 cm long (extends, of course)
     //  0.725 neck pipe,  26.910 cm long
-
-  /*  
-    //tuning slide bow. 
-    //TODO: curve this thing. define wall thickness so it fits
-    //TODO: add the inner tuning slides at both ends. 
-    //TODO: inner tuning slide at bell end, 9.9mm inner, 10.53 outer diameter
-    translate([0,0, -55.93-96.85-150.42-150.42-53.36-67.32-219.90])
-        conic_tube(h=219.90, r1=7.55, r2=9.90, wall=bell_thickness);//sudden jump in profile. add some wall width to make this    
-        */
-    
-    
-    //bell, combination of bessel shapes and one bit of conical tubing:
-    //TODO: this seems to bewithout the tuning slide cylinder on top!
-         
+   
     
     polygon = cut_curve(bell_polygon, min_height, max_height);
 
@@ -578,8 +572,8 @@ module bell_profile() {
 }
 
 
-
-module top_joint(polygon, rotate=true) {
+/* render a joint at top of tube. rotate=true means the male part is up instead of down*/
+module top_joint(polygon, rotate=false) {
 
     difference() {
         translate(polygon[0]) {
@@ -601,8 +595,8 @@ module top_joint(polygon, rotate=true) {
     };
 }
 
-
-module bottom_joint(polygon, rotate=true) {
+/* render a joint at bottom of tube. rotate=true means the male part is up instead of down*/
+module bottom_joint(polygon, rotate=false) {
     difference() {
         translate(polygon[len(polygon)-1]) {
             if(rotate) {
@@ -704,10 +698,10 @@ module extrude_line(input_curve, wall_thickness) {
                     extrude_curve[i-1],
                     extrude_curve[i]
                 )*wall_thickness
-        ],
+        ]
         //add the top most part, make sure it ends with a horizontal edge
         //so it can be joined to another surface if needed.
-        [extrude_curve[0]+[wall_thickness,0]]
+//        ,[extrude_curve[0]+[wall_thickness, 0]]
         )
        
     );
