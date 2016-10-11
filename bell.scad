@@ -11,7 +11,9 @@ include <tuning_slide.scad>;
 
 $fn = 300;
 
-
+//cut 3.5mm from the bell section. It'll be compensated, just a tad shorter tuning slide
+//hack becuase i printed the bell too short :)
+HACK_FOR_PRINTER=3.5;
 bell_radius = 108.60;
 
 slide_receiver_tolerance = -0.02;
@@ -33,7 +35,7 @@ neckpipe_bell_connection_height = -330;
 
 render_neckpipe_bases = true;
 
-part = "neckpipe_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 1.6;
 
@@ -48,7 +50,7 @@ joint_depth = 9;
 //for your joint to have a nice looking and printable bottom, set this higher
 joint_slanted_bottom = 20;
 //the receiver should be slightly longer than the slide
-tuning_sleeve_extra_length = 0.36;
+tuning_sleeve_extra_length = 0;
 
 lip_start=2;
 lip_end=5;
@@ -85,7 +87,7 @@ steps=500;
     
 first_bell_cut = -35;
 second_bell_cut = -185;
-third_bell_cut = second_bell_cut - 185;
+third_bell_cut = second_bell_cut - 197+4;
 fourth_bell_cut = third_bell_cut - 185;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
@@ -93,7 +95,7 @@ bell_polygon = concat(
             //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
             //the tuning slide of 10.53 - 9.9!
             [
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length + tuning_sleeve_extra_length],
+                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length - tuning_sleeve_extra_length+HACK_FOR_PRINTER],
                 [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36]
             //[
             ],
@@ -491,8 +493,8 @@ module bell_connection_base(height, tolerance) {
 
     cylinder_height=15; 
     difference() {
-                    translate([0, -bell_radius_at_height(bell_polygon, height-4)-cylinder_height+5, height-4])
-                        rotate([-70,0,0])
+        translate([0, -bell_radius_at_height(bell_polygon, height-4)-cylinder_height+5, height])
+        rotate([-70,0,0])
         scale([1,1,1])
         cylinder(r2=8+tolerance, r1=1+tolerance, h=cylinder_height, $fn=4);  
         solid_bell();
@@ -701,7 +703,7 @@ module extrude_line(input_curve, wall_thickness) {
         ]
         //add the top most part, make sure it ends with a horizontal edge
         //so it can be joined to another surface if needed.
-//        ,[extrude_curve[0]+[wall_thickness, 0]]
+       ,[extrude_curve[0]+[wall_thickness, 0]]
         )
        
     );
