@@ -22,13 +22,13 @@ The thesis can be found at http://www.acoustics.ed.ac.uk/wp-content/uploads/Thes
 
 # How does it look?
 
-Photos will follow soon.
+![Image of nearly finished PrintBone](http://i.imgur.com/ARro4TL.jpg)
 
 # How does it play?
 
 Like a large bore trombone.
 
-It sounds well and the partials are in tune. Mine still needs finishing, video will be posted later.
+It plays easily, sounds well and the partials are in tune. Mine still needs finishing, video will be posted later.
 
 # Can I easily modify it to another model?
 
