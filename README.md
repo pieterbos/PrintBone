@@ -32,7 +32,7 @@ It sounds well and the partials are in tune. Mine still needs finishing, video w
 
 # Can I easily modify it to another model?
 
-You certainly can!
+You certainly can! The design is mostly parameterized, so you can quite easily change things like the tuning slide diameters, neckpipe diameter, slide receiver and bell profile.
 
 # Usage
 
