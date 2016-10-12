@@ -22,6 +22,8 @@ The thesis can be found at http://www.acoustics.ed.ac.uk/wp-content/uploads/Thes
 
 # How does it look?
 
+It still needs some finishing, but here it is, printed in silver PLA.
+
 ![Image of nearly finished PrintBone](http://i.imgur.com/ARro4TL.jpg)
 
 # How does it play?
@@ -46,11 +48,21 @@ http://www.thingiverse.com/thing:71464
 
 Open bell.scad and set the part variable to "all" to render the entire trombone
 
-You might want to edit tuning_slide.scad with a lower detail level, because it slows everything down.
+You might want to edit tuning_slide.scad with a lower detail level if you want to make changes, because it slows everything down.
 
-#Known issues
+The ```generate_trombone.sh``` script generates all the models in STL format, with many openscad instances running in parallel. It should take about 20-30 minutes at full detail.
 
-It needs to be shortened a bit, because it does A=440 almost the tuning slide all the way in.
+# Instructions for building your own
+
+1. Print the STL files or generate your own STL files and print those
+2. Glue the joints together. Superglue works well if you print it in PLA.
+
+# How large a printer do I need?
+The current model is meant to be printed on a printer that can print at least 21*22*20 centimeters. It can be modified for smaller or larger printers relatively easily.
+
+# Known issues
+
+- It needs to be shortened a bit, because it does A=440 with the tuning slide almost all the way in.
 
 
 
