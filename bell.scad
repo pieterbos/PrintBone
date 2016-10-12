@@ -35,7 +35,7 @@ neckpipe_bell_connection_height = -330;
 
 render_neckpipe_bases = true;
 
-part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 bell_thickness = 1.6;
 
@@ -200,10 +200,10 @@ rotate([180,0,0]) {
 
 
     if(part == "all") {
-//        translated_tuning_slide();
+        translated_tuning_slide();
     }
     if(part == "tuning_slide") {
-        //tuning_slide();
+        tuning_slide();
     }
 
     //#check_slide_clearance(bell_thickness);
