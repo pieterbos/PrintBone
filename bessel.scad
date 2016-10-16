@@ -7,12 +7,12 @@ Module to render bessel curves, specifically for a trombone bell
 use <array_iterator.scad>;
 
 rotate_extrude()
-bessel_curve(throat_radius=10.51, mouth_radius=108.06, length=-(-55.93-96.85-150.42-150.42), flare=0.78, wall_thickness=3, solid=false);
+bessel_curve(throat_radius=10.51, mouth_radius=108.06, length=-(-55.93-96.85-150.42-150.42), flare=0.78, wall_thickness=3, solid=true);
 
 
 function cut_curve(curve, min_height, max_height) = 
     cut_curve_at_height2( //bell_polygon,
-        cut_curve_at_height(bell_polygon, min_height, max_height)
+        cut_curve_at_height(curve, min_height, max_height)
         , min_height, max_height);
 
 /* 
@@ -39,9 +39,9 @@ module conic_tube_conic_wall(h, r1, r2, wall1, wall2, center = false) {
 */
 
 
-module bessel_curve(translation=0, throat_radius, mouth_radius, length, flare, wall_thickness, solid=true) {    
+module bessel_curve(translation=0, throat_radius, mouth_radius, length, flare, wall_thickness, solid=true, steps=100) {    
 
-   2d_bessel = 2d_bessel_polygon(translation, throat_radius, mouth_radius, length, flare);
+   2d_bessel = 2d_bessel_polygon(translation, throat_radius, mouth_radius, length, flare, steps);
    extrude_line(2d_bessel, wall_thickness, solid);
 
 }
@@ -67,11 +67,10 @@ module extrude_line(input_curve, wall_thickness, solid=false) {
     //to ensure good printing and gluing possibilities
     bottom_point = [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]];
     top_point = [extrude_curve[0]+[wall_thickness, 0]];
-    
+
     outer_curve = concat(
             bottom_point,
             outer_wall,
-
             top_point
     );
     if(!solid) {
@@ -83,11 +82,12 @@ module extrude_line(input_curve, wall_thickness, solid=false) {
            
         );
     } else {
+
       polygon( points=
        concat(
         [[0, 0]],
         outer_curve,
-        [ [0, outer_curve[len(outer_curve)-1][1]]]
+        [[0, extrude_curve[0][1]]]
         )
     );
     }
