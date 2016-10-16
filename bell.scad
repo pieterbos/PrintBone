@@ -2,8 +2,8 @@ use <array_iterator.scad>;
 
 //curve library to generate the neckpipe. Not ideal, but works for now and much easier
 //to create good tubes with than with sweep() like the tuning slide.
+//TODO: replace with the library newly written for this project, bent_tubes :)
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
-
 
 $fn = 300;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
@@ -11,9 +11,7 @@ include <tuning_slide.scad>;
 
 $fn = 300;
 
-//cut 3.5mm from the bell section. It'll be compensated, just a tad shorter tuning slide
-//hack becuase i printed the bell too short :)
-HACK_FOR_PRINTER=3.5;
+
 bell_radius = 108.60;
 
 slide_receiver_tolerance = -0.02;
@@ -86,8 +84,8 @@ steps=500;
     
     
 first_bell_cut = -35;
-second_bell_cut = -185;
-third_bell_cut = second_bell_cut - 197+4;
+second_bell_cut = -195;
+third_bell_cut = second_bell_cut - 195;
 fourth_bell_cut = third_bell_cut - 185;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
@@ -95,7 +93,7 @@ bell_polygon = concat(
             //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
             //the tuning slide of 10.53 - 9.9!
             [
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length - tuning_sleeve_extra_length+HACK_FOR_PRINTER],
+                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length - tuning_sleeve_extra_length],
                 [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36]
             //[
             ],
