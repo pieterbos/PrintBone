@@ -1,6 +1,3 @@
-use <scad-utils/transformations.scad>;
-use <list-comprehension-demos/sweep.scad>;
-use <array_iterator.scad>;
 use <bent_tubes.scad>
 
 tuning_slide_length = 219.90;
@@ -24,7 +21,7 @@ tuning_slide_radius = tuning_slide_length/pi;
 
 //uncomment the following two lines to test just this file
 //rotate([-90,0,0])
-tuning_slide();
+//tuning_slide();
 
 module tuning_slide(solid = false) {
     union() {
