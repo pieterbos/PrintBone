@@ -74,6 +74,8 @@ If you want to print a smaller bell, a smaller printer will do.
 - the connection between the braces and the bell are a bit hard to glue. should be replaced with the connectors on the other side pf the braces
 - the bottom-most t-profile connector of the bell coulf use a bit of more clearance
 - the brace most near the slide could be moved maybe half a centimeter towards the bell for more comfortable holding
+- the code needs to be cleaned up, documented and split into separate files
+- The parameters need to be documented and made more easy to change
 
 # Slide
 
