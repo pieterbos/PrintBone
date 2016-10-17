@@ -1,5 +1,3 @@
-use <array_iterator.scad>;
-
 //curve library to generate the neckpipe. Not ideal, but works for now and much easier
 //to create good tubes with than with sweep() like the tuning slide.
 //TODO: replace with the library newly written for this project, bent_tubes :)
