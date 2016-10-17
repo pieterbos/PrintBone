@@ -559,7 +559,7 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
 }
 
 module solid_bell() {
-//    rotate_extrude()   
+    rotate_extrude()   
     bell_profile();
 }
 
