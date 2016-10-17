@@ -1,6 +1,8 @@
-//curve library to generate the neckpipe. Not ideal, but works for now and much easier
-//to create good tubes with than with sweep() like the tuning slide.
-//TODO: replace with the library newly written for this project, bent_tubes :)
+/**
+Something like a renaissance alto bell for the Jinbao alto. 
+Bore reducers for the inner slide are probably possible if you remove the lead pipe, they will be added later
+*/
+
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 use <../bessel.scad>;
