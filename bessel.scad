@@ -7,7 +7,7 @@ Module to render bessel curves, specifically for a trombone bell
 use <array_iterator.scad>;
 
 rotate_extrude()
-bessel_curve(throat_radius=10.51, mouth_radius=108.06, length=-(-55.93-96.85-150.42-150.42), flare=0.78, wall_thickness=3, solid=true);
+bessel_curve(throat_radius=6.51, mouth_radius=94/2, length=400, flare=1, wall_thickness=3, solid=true, steps=100);
 
 
 function cut_curve(curve, min_height, max_height) = 
@@ -46,7 +46,7 @@ module bessel_curve(translation=0, throat_radius, mouth_radius, length, flare, w
 
 }
 
-EPSILON = 0.00000001;
+EPSILON = 0.00000000001;
 function abs_diff(o1, o2) =
     abs(o1-o2);
     
@@ -55,7 +55,8 @@ function abs_diff(o1, o2) =
 module extrude_line(input_curve, wall_thickness, solid=false) {
     //remove consecutive points that are the same. Can't have that here or we'll have very strange results
     extrude_curve = concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]);
-
+        echo("stripped");
+    echo(len(input_curve)-len(extrude_curve));
     outer_wall =  [for (i = [len(extrude_curve)-1:-1:1]) 
                 extrude_curve[i] + 
                 unit_normal_vector(
@@ -63,6 +64,7 @@ module extrude_line(input_curve, wall_thickness, solid=false) {
                     extrude_curve[i]
                 )*wall_thickness
         ];
+
     //make sure we have a horizontal edge both at the top and bottom
     //to ensure good printing and gluing possibilities
     bottom_point = [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]];
@@ -73,27 +75,29 @@ module extrude_line(input_curve, wall_thickness, solid=false) {
             outer_wall,
             top_point
     );
+    
     if(!solid) {
+        // a bug in openscad causes small polygons with many points to render a MUCH lower resolution.
+
+        scale([0.01, 0.01, 0.01])   
         polygon( points=
            concat(
-            extrude_curve,
-            outer_curve
+            [ for (x=extrude_curve) [x[0]*100, x[1]*100]],
+            [ for (x=outer_curve) [x[0]*100, x[1]*100]]
             )
-           
         );
     } else {
-
+        scale([0.01, 0.01, 0.01])
       polygon( points=
        concat(
-        [[0, 0]],
-        outer_curve,
-        [[0, extrude_curve[0][1]]]
+          [[0, bottom_point[0][1]*100]],
+          [ for (x=outer_curve) [x[0]*100, x[1]*100]],
+          [[0, top_point[0][1]*100]]
         )
     );
     }
 }
-
-function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, flare, steps=100) =    
+function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, flare, steps=30) =    
 
     //inner curve of the bell
     let(
