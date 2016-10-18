@@ -34,7 +34,7 @@ neckpipe_bell_connection_height = -279.5;
 
 render_neckpipe_bases = true;
 
-part = "neckpipe";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 other_wall_thickness = 1.2;
 
@@ -82,7 +82,7 @@ echo(total_bell_height);
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
 //steps of the bessel curve for loop
-steps=500;
+steps=90;
    
 
     
