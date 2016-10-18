@@ -34,11 +34,11 @@ neckpipe_bell_connection_height = -279.5;
 
 render_neckpipe_bases = true;
 
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "neckpipe";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
-bell_thickness = 1.6;
+other_wall_thickness = 1.2;
 
-bell_thickness_2 = 1.2;
+bell_thickness = 1.2;
 joint_extra_thickness = 1.2;
 joint_length = 5; //length of the glue joint
 joint_overlap = 3; //length that the joint sleeve overlaps the bell
@@ -116,8 +116,8 @@ bell_polygon = concat(
                 [tuning_slide_large_receiver_inner_radius, -450],
                 [tuning_slide_large_receiver_inner_radius, -410]
             ],
-            [for(x=[-390:-1:-410]) [10.3/2, x]],
             [
+                [10.2/2, -405],
                 [10.3/2, -390],
                 [12.7/2, -346], //transition to straight part without jump. not sure if this is correct
 
@@ -126,14 +126,13 @@ bell_polygon = concat(
             2d_bessel_polygon(translation=-123,  throat_radius=12.7/2, mouth_radius=23/2, length=346-123, flare=1.260, steps=steps),
             2d_bessel_polygon(translation=-51, throat_radius=23/2, mouth_radius=37/2, length=72, flare=0.894, steps=steps),
         2d_bessel_polygon(translation=-14.37, throat_radius=37/2, mouth_radius=61.8/2, length=36.63, flare=0.7, steps=steps),
-        2d_bessel_polygon(throat_radius=61.8/2, mouth_radius=bell_radius, length=14.37, flare=1.0, steps=steps)
+        2d_bessel_polygon(throat_radius=61.8/2, mouth_radius=bell_radius, length=14.37, flare=1, steps=steps)
     );
     
 //length 14.37, 61.8mm diameter
 //length 51mm - 37mm diameter
 //length 123, 23mm diameter
 //length 346, 12.7mm diameter
-
 
 rotate([180,0,0]) {
 
@@ -146,7 +145,7 @@ rotate([180,0,0]) {
         render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
     }
     if(part == "slide_receiver_test") {
-        slide_receiver(bell_thickness);
+        slide_receiver(other_wall_thickness);
     }
     if(part == "tuning_slide_test_one") {
         tuning_slide_test_one();
@@ -200,12 +199,12 @@ rotate([180,0,0]) {
         tuning_slide();
     }
 
-    //#check_slide_clearance(bell_thickness);
+    //#check_slide_clearance(other_wall_thickness);
 
 
     if(part == "all" || part == "neckpipe") {        
 //        rotate([-90,0,0]) {
-            neckpipe(bell_thickness);
+            neckpipe(other_wall_thickness);
             bell_side_neckpipe_bell_connection();
 //            tuning_slide_side_neckpipe_bell_connection();
   //      }
@@ -215,7 +214,7 @@ rotate([180,0,0]) {
         intersection() {
             translate([0, 500,-150])
             rotate([-90,0,0]) {
-        top_part_of_neckpipe(bell_thickness);
+        top_part_of_neckpipe(other_wall_thickness);
 
             };
                     translate([-50,12,-75])
@@ -267,7 +266,7 @@ module  tuning_slide_test_one() {
 module  tuning_slide_test_two() {
 
         intersection() {
-            small_tuning_slide_sleeve(bell_thickness);
+            small_tuning_slide_sleeve(other_wall_thickness);
             translate([-200,-200,-1050])
             cube(500);
         }
@@ -302,14 +301,17 @@ module slide_receiver(wall_thickness, solid = false) {
         edge_for_locknut_length=2.5;
     edge_for_locknut_thickness = 1.5;
         translate([0,0,slide_receiver_length-edge_for_locknut_length])
-        difference() {
+        if(solid){
             cylinder(r=slide_receiver_large_radius + wall_thickness+edge_for_locknut_thickness, h=edge_for_locknut_length);
-            cylinder(r=slide_receiver_large_radius + wall_thickness, h=edge_for_locknut_length);
+        } else {
+       
+            difference() {
+                cylinder(r=slide_receiver_large_radius + wall_thickness+edge_for_locknut_thickness, h=edge_for_locknut_length);
+                cylinder(r=slide_receiver_large_radius + wall_thickness, h=edge_for_locknut_length);
+            }
         }
-    
         if(!solid) {
             //sleeve to make a good connection to the neckpipe - which could be less wide than this!
-        
             translate([0,0,-slide_receiver_sleeve_length])
             difference() {
                 cylinder(r2=slide_receiver_small_radius + wall_thickness, r1=neck_pipe_radius+wall_thickness, h=slide_receiver_sleeve_length);
@@ -339,7 +341,7 @@ module neckpipe_bell_connection(height) {
             translate([0,0,height])
             rotate([90,0,0])
             cylinder(h = tuning_slide_radius*2, r=neckpipe_bell_connection_radius);
-            solid_neckpipe(bell_thickness);
+            solid_neckpipe(other_wall_thickness);
             solid_bell();
 
             connection_bases(connection_base_clearance);
@@ -389,7 +391,7 @@ module neckpipe(wall_thickness) {
 //a solid neckpipe. useful in difference with some other things
 module solid_neckpipe(wall_thickness) {
     neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=true);
-    connection_bases();
+
 }
 
 
@@ -398,41 +400,32 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
 
 
         if(solid) {
-            solid_small_tuning_slide_sleeve(bell_thickness);
+            solid_small_tuning_slide_sleeve(other_wall_thickness);
         } else {
-            small_tuning_slide_sleeve(bell_thickness);
+            small_tuning_slide_sleeve(other_wall_thickness);
         }
 
         od = neck_pipe_radius*2 + wall_thickness+2;
         id = solid? 0.0005 : neck_pipe_radius*2;
 
-            //baroque trombone. That means NO gooseneck!
-        goose_neck_offset = 0;
-
-        goose_neck_start = 75;
+        //renaissance style trombone with tiny bell. That means NO gooseneck needed.
 
         slide_receiver_begin = neck_pipe_minus_tuning_slide_receiver_length -slide_receiver_length;
 
-        goose_neck_x_length = slide_receiver_begin - goose_neck_start;
-        goose_neck_y_length = goose_neck_offset;
-
-
-        goose_neck_angle=atan(goose_neck_y_length/goose_neck_x_length);
 
         //neck pipe, including gooseneck
         translate([0, -tuning_slide_radius *2, total_bell_height + tuning_sleeve_extra_length])
-            curvedPipe([ [0,0,0],
-				[0,0,goose_neck_start],
-				[0,-goose_neck_offset,slide_receiver_begin]				
-			   ],
-	            2, //two segments. strange library
-				[50],
-                od,
-                id);
+        if(solid) {
+            cylinder(h=slide_receiver_begin, r=od/2);
+        } else {
+            difference() {
+                cylinder(h=slide_receiver_begin, r=od/2);
+                cylinder(h=slide_receiver_begin, r=id/2);
+            };
+        }
     
         //slide receiver
-        translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])
-        rotate([goose_neck_angle, 0, 0])
+        translate([0, -tuning_slide_radius *2-0, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])
         slide_receiver(wall_thickness, solid);
     
 
@@ -462,7 +455,7 @@ module neckpipe_connection_base(translation, height, tolerance) {
         rotate([70,0,0])
         scale([1,1,1])
         cylinder(r2=6.3+tolerance, r1=3+tolerance, h=19, $fn=8);  
-        neckpipe_implementation(bell_thickness, neck_pipe_radius, true);
+        neckpipe_implementation(other_wall_thickness, neck_pipe_radius, true);
     }
 }
 
@@ -529,9 +522,13 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
     echo(polygon[0]);
         echo(polygon[len(polygon)-1]);
 
+echo("thickness polygon:" );
+    echo(len(polygon));
+
     rotate_extrude()
+
     union() {
-        extrude_line(polygon, bell_thickness_2, solid=false);
+        extrude_line(polygon, bell_thickness, solid=false);
         if(render_top_lip) {
             top_joint(polygon);                
         };
@@ -553,7 +550,7 @@ module solid_bell() {
 }
 
 module bell_profile() {
-    extrude_line(bell_polygon, bell_thickness_2, solid=true);
+    extrude_line(bell_polygon, bell_thickness, solid=true);
 }
 
 
@@ -611,8 +608,8 @@ module flat_bottom_joint(full_curve, min_height, max_height) {
 //    }
     union() {
         difference() {
-            extrude_line(curve, bell_thickness_2 + joint_extra_thickness);
-            extrude_line(curve, bell_thickness_2 + joint_clearance);
+            extrude_line(curve, bell_thickness + joint_extra_thickness);
+            extrude_line(curve, bell_thickness + joint_clearance);
         }
 //        polygon(curve[0]
     }
