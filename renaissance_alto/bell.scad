@@ -11,7 +11,7 @@ $fn = 20;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
-$fn = 300;
+$fn = 20;
 
 
 bell_radius = 94/2;
@@ -34,7 +34,7 @@ neckpipe_bell_connection_height = -279.5;
 
 render_neckpipe_bases = true;
 
-part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 other_wall_thickness = 1.2;
 
@@ -101,33 +101,79 @@ echo(tuning_slide_large_radius);
 //-8.09 height, 49-8.5*2=32mm measured
 //-45mm height, 49-15 = 
 
-//the curve (not really a polygon, just a set of points for now!) of the bell
-bell_polygon = concat(
-            //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
-            //the tuning slide of 10.53 - 9.9!
-            /*[
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length - tuning_sleeve_extra_length],
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36]
-            //[
-            ],*/
-            //this is 
-            
-            [
-                [tuning_slide_large_receiver_inner_radius, -450],
-                [tuning_slide_large_receiver_inner_radius, -410]
-            ],
-            [
-                [10.2/2, -405],
-                [10.3/2, -390],
-                [12.7/2, -346], //transition to straight part without jump. not sure if this is correct
+/*
+Array of input. First element defines type:
+["CYLINDER", radius, length]
+["CONE", r1, r2, length]
+["BESSEL", r_small, r_large, flare, length]
+*/
+bell_input = [
+    ["CYLINDER", tuning_slide_large_receiver_inner_radius, 40],
+    ["CONE", 10.2/2, 10.3/2, 15],
+    ["CONE", 10.3/2, 12.7/2, 44],
+    ["BESSEL", 14.7/2, 23/2, 1.260, 223],
+    ["BESSEL", 23/2, 37/2, 0.894, 72],
+    ["BESSEL", 37/2, 61.8/2, 0.7, 36.6],
+    ["BESSEL", 61.8/2, bell_radius, 1, 14.37],
+    
+];
 
-            ],
-   
-            2d_bessel_polygon(translation=-123,  throat_radius=12.7/2, mouth_radius=23/2, length=346-123, flare=1.260, steps=steps),
-            2d_bessel_polygon(translation=-51, throat_radius=23/2, mouth_radius=37/2, length=72, flare=0.894, steps=steps),
-        2d_bessel_polygon(translation=-14.37, throat_radius=37/2, mouth_radius=61.8/2, length=36.63, flare=0.7, steps=steps),
-        2d_bessel_polygon(throat_radius=61.8/2, mouth_radius=bell_radius, length=14.37, flare=1, steps=steps)
+
+
+bell_polygon = translate_bell_input(bell_input);
+echo("bell:");
+echo(bell_polygon);
+
+//TODO: move this to the bessel.scad file and reuse in other files
+function translate_bell_input(input) =
+    concat_array(
+        [  
+            for (i =[0:len(input)-1]) 
+                translate_cylinder_input(input, i)
+        ]
     );
+
+function concat_array(input, i=0) = 
+    i >= len(input) ?
+        [] :
+        concat(input[i], concat_array(input, i+1));
+            ;
+
+// Haven't found a better way to define this in openscad. It works...
+function translate_cylinder_input(input, i) =
+    let(value=input[i])
+    value[0] == "CYLINDER" ?
+            [
+                [value[1], -sum_length(input, i)],
+                [value[1], -sum_length(input, i+1)]
+            ]
+            : translate_cone_input(input, i);
+            ;
+
+function translate_cone_input(input, i) =
+    let(value=input[i])
+    value[0] == "CONE" ?
+            [
+                [value[1], -sum_length(input, i)],
+                [value[2], -sum_length(input, i+1)]
+            ]
+            : translate_bessel_input(input, i);
+            ;
+
+function translate_bessel_input(input, i) =
+    let(value=input[i])
+    value[0] == "BESSEL" ?
+//            [value[1], -sum_length(input, i)]
+            2d_bessel_polygon(translation=-sum_length(input, i+1),  throat_radius=value[1], mouth_radius=value[2], length=value[4], flare=value[3], steps=steps)
+            : "ERROR";
+            ;
+     
+// sum the length parameter of all input curves of point i and later. Length is always last
+// input is array of instructions
+function sum_length(input, i, sum = 0) =
+    i >= len(input) ? sum : sum_length(input, i+1, sum + input[i][len(input[i])-1]);
+    
+
     
 //length 14.37, 61.8mm diameter
 //length 51mm - 37mm diameter
@@ -193,7 +239,7 @@ rotate([180,0,0]) {
 
 
     if(part == "all") {
-        translated_tuning_slide();
+       // translated_tuning_slide();
     }
     if(part == "tuning_slide") {
         tuning_slide();
