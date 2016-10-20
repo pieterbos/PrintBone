@@ -30,11 +30,13 @@ It still needs some finishing, but here it is, printed in silver PLA.
 
 Like a large bore trombone.
 
-It plays easily, sounds well and the partials are in tune. Mine still needs finishing, video will be posted later.
+It plays easily, sounds well and the partials are in tune. A short recording of both a printed bell and a regular brass bell is at https://soundcloud.com/pieter-bos-2013025 - can you guess which one is which?
 
 # Can I easily modify it to another model?
 
 You certainly can! The design is mostly parameterized, so you can quite easily change things like the tuning slide diameters, neckpipe diameter, slide receiver and bell profile.
+
+I'm currently working on separating the code and the settings, and documenting the changes you need to make, so it's easier to do by others.
 
 # Usage
 
@@ -79,4 +81,5 @@ If you want to print a smaller bell, a smaller printer will do.
 
 # Slide
 
-tips on how to obtain suitable tubes for a slide are welcome.
+It might be very possible to create a slide, given a source of rigid thinwalled tubing with the right diameters, and a good material for stockings.
+Tips on how to obtain suitable tubes for a slide are welcome.
