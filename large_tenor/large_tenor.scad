@@ -60,7 +60,9 @@ bell_input = [
 
 //render the bottom-most part of the bell flare as a separate piece
 //this can making printing the bell without support easier
-render_bell_flare_in_two_pieces = true;
+//if you set this to true, you will have to uncomment a line in generate_trombone.sh as well
+//see that file for more details
+render_bell_flare_in_two_pieces = false;
 two_part_cut_height = -35;
 //where the bell should be cut for printing
 first_bell_cut = -195;
