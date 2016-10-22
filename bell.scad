@@ -4,113 +4,105 @@
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
 
 use <bessel.scad>;
+use <connections.scad>;
 
 $fn = 20;
 //tuning_slide(solid=false) module renders a tuning slide, using the sweep module.
 include <tuning_slide.scad>;
 
-$fn = 20;
 
 
-bell_radius = 108.60;
-
-slide_receiver_tolerance = -0.02;
-
-connection_base_clearance = 0.15;
-
-slide_receiver_small_radius = 50/pi/2 + slide_receiver_tolerance;
-slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_tolerance;
-
-slide_receiver_sleeve_length=25;//normally 25
-
-//extra width added to the slide receiver to match the slide
-
-slide_receiver_length=31.5 + slide_receiver_tolerance;
-
-// the thumb brace should be positioned for easy holding, so close to the slide
-neckpipe_bell_connection_height = -330;
-
-render_neckpipe_bases = true;
-
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
-
-bell_thickness = 1.6;
-
-bell_thickness_2 = 1.2;
-joint_extra_thickness = 1.2;
-joint_length = 5; //length of the glue joint
-joint_overlap = 3; //length that the joint sleeve overlaps the bell
-joint_clearance = 0.13; //we need some joint clearance, obviously
-
-joint_width = 6.5;
-joint_depth = 9;
-//for your joint to have a nice looking and printable bottom, set this higher
-joint_slanted_bottom = 20;
-//the receiver should be slightly longer than the slide
-tuning_sleeve_extra_length = 0;
-
-lip_start=2;
-lip_end=5;
-lip_slant=1;
-lip_length=7;
-//difference in size between the joint outer and inner lip
-//so they can fit together without requiring too much use of sandpaper
-// i need better words for this :)
-lip_offset = 0.1;
-
+//TUNING SLIDE PARAMETERS
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
 tuning_slide_spacing = 0.1;
-
-neck_pipe_length = 269.10;
-neck_pipe_radius = 7.25;
-
-neckpipe_bell_connection_radius=6.5;
-
-neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_small_length -tuning_sleeve_extra_length;
-
-lip = [[lip_start, 0], [lip_start+lip_slant, lip_length], [lip_end-lip_slant, lip_length], [lip_end, 0]];
-
-inner_lip = [[lip_start+lip_offset, 0], [lip_start+lip_slant +lip_offset, lip_length-lip_offset], [lip_end-lip_slant-lip_offset, lip_length-lip_offset], [lip_end-lip_offset, 0]];
-
-total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
-
-echo(total_bell_height);
-
+//the receiver can be slightly longer than the slide
+tuning_sleeve_extra_length = 0;
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
-//steps of the bessel curve for loop
-steps=500;
-    
-    
+//DETAIL PARAMETERS
+//steps of the bessel curve for loop. Increases bell detail.
+//for development 50 is enought, for printing set to a few hundred
+steps=50;
+//steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
+$fn = 20;
+
+//the radius of the bell in mm
+bell_radius = 108.60; 
+
+bell_input = [
+
+    ["CYLINDER", tuning_slide_large_receiver_inner_radius, tuning_slide_large_length+tuning_sleeve_extra_length],
+    ["CONE", 10.53, 11.05, 53.36],
+    ["BESSEL", 11.05, 15.07, 1.260, 150.42],
+    ["BESSEL", 15.07, 22.28, 0.894, 150.42],
+    ["BESSEL", 22.28, 41.18, 0.494, 96.85],
+    ["BESSEL", 41.18, bell_radius, 1.110, 55.93]
+];
+
+//where the bell should be cut for printing
 first_bell_cut = -35;
 second_bell_cut = -195;
 third_bell_cut = second_bell_cut - 195;
 fourth_bell_cut = third_bell_cut - 185;
 
-//the curve (not really a polygon, just a set of points for now!) of the bell
-bell_polygon = concat(
-            //tuning slide receiver. Inner tuning slide radius: 9.9mm. That makes a wall thickness of
-            //the tuning slide of 10.53 - 9.9!
-            [
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36-tuning_slide_large_length - tuning_sleeve_extra_length],
-                [tuning_slide_large_receiver_inner_radius, -55.93-96.85-150.42-150.42-53.36]
-            //[
-            ],
-             //this is equivalent to   conic_tube(h=53.36, r1=10.53, r2=11.05, wall=bell_thickness);
-            [
-                [11.05, -55.93-96.85-150.42-150.42], 
-                [10.53, -55.93-96.85-150.42-150.42-53.36]
-            ],
-   
-            2d_bessel_polygon(translation=-55.93-96.85-150.42,  throat_radius=11.05, mouth_radius=15.07, length=150.42, flare=1.260, steps=steps),
-            2d_bessel_polygon(translation=-55.93-96.85, throat_radius=15.07, mouth_radius=22.28, length=150.42, flare=0.894, steps=steps),
-        2d_bessel_polygon(translation=-55.93, throat_radius=22.28, mouth_radius=41.18, length=96.85, flare=0.494, steps=steps),
-        2d_bessel_polygon(throat_radius=41.18, mouth_radius=bell_radius, length=55.93, flare=1.110, steps=steps)
-    );
+//thumb brace height. Higher thumb brace = more negative number, sorry bout that
+// the thumb brace should be positioned for easy holding, so close to the slide
+neckpipe_bell_connection_height = -330;
 
-//TODO minor: the tuning slide of a real trombone is straight, then
-//bends, then is straight again
-//this makes this trombone too wide, which is a bit strange
+
+//CLEARANCES
+/* clearance for the slide receiver. Increase for a looser fit*/
+slide_receiver_clearance = -0.02;
+/* clearance for the connectors on the braces between bell and neckpipe. Increase for looser fit */
+connection_base_clearance = 0.15;
+//The clearances of the glue joints
+joint_clearance = 0.1;
+
+
+//SLIDE RECEIVER
+//the smallest radius of the slide receiver. Measure this on your slide.
+slide_receiver_small_radius = 50/pi/2 + slide_receiver_clearance;
+//the larges radius of the slide receiver. Measure this on your slide.
+slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_clearance;
+//The slide receiver length. Measure on your slide.
+slide_receiver_length=31.5 + slide_receiver_clearance;
+
+//defines the slope. the connection between the neckpipe and the slide receiver
+//mainly for visual improvement.
+//play around until you get a good looking result. The default is usually fine.
+slide_receiver_sleeve_length=25;
+
+part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+
+//WALL THICKNESSES
+//the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
+neckpipe_wall_thickness = 1.6;
+//the wall thickness of the bell. For 8.5 inch, 1.6 works great. For tiny bells, 1.2 is enough.
+bell_wall_thickness = 1.6;
+
+
+
+
+
+neck_pipe_length = 269.10;
+neck_pipe_radius = 7.25;
+
+
+neckpipe_bell_connection_radius=6.5;
+
+neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_small_length -tuning_sleeve_extra_length;
+
+
+total_bell_height = -55.93-96.85-150.42-150.42-53.36; //TODO: make this with proper parameters
+
+echo(total_bell_height);
+
+
+
+
+
+//the curve (not really a polygon, just a set of points for now!) of the bell
+bell_profile = create_bell_profile(bell_input, steps);
 
 rotate([180,0,0]) {
 
@@ -123,7 +115,7 @@ rotate([180,0,0]) {
         render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-400, max_height=-380);
     }
     if(part == "slide_receiver_test") {
-        slide_receiver(bell_thickness);
+        slide_receiver(neckpipe_wall_thickness);
     }
     if(part == "tuning_slide_test_one") {
         tuning_slide_test_one();
@@ -197,22 +189,22 @@ rotate([180,0,0]) {
 
 
     if(part == "all") {
-        translated_tuning_slide();
+//        translated_tuning_slide();
     }
     if(part == "tuning_slide") {
         tuning_slide();
     }
 
-    //#check_slide_clearance(bell_thickness);
+    //#check_slide_clearance(neckpipe_wall_thickness);
     if(part == "all" || part == "neckpipe_bottom") {
-        bottom_part_of_neckpipe(bell_thickness);
+        bottom_part_of_neckpipe(neckpipe_wall_thickness);
     }
     if(part == "all" || part == "neckpipe_top") {
-        top_part_of_neckpipe(bell_thickness);
+        top_part_of_neckpipe(neckpipe_wall_thickness);
     }
     if(part == "neckpipe") {        
         rotate([-90,0,0]) {
-            neckpipe(bell_thickness);
+            neckpipe(neckpipe_wall_thickness);
             bell_side_neckpipe_bell_connection();
             tuning_slide_side_neckpipe_bell_connection();
         }
@@ -222,7 +214,7 @@ rotate([180,0,0]) {
         intersection() {
             translate([0, 500,-150])
             rotate([-90,0,0]) {
-        top_part_of_neckpipe(bell_thickness);
+        top_part_of_neckpipe(neckpipe_wall_thickness);
 
             };
                     translate([-50,12,-75])
@@ -252,7 +244,7 @@ rotate([180,0,0]) {
 
 module render_bell_bottom() {
     
-    extra_height  = 0.87; //TODO: get exact height from bell_polygon
+    extra_height  = 0.87; //TODO: get exact height from bell_profile
     union() {
         render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=first_bell_cut, max_height=0);
 
@@ -276,7 +268,7 @@ module  tuning_slide_test_one() {
 module  tuning_slide_test_two() {
 
         intersection() {
-            small_tuning_slide_sleeve(bell_thickness);
+            small_tuning_slide_sleeve(neckpipe_wall_thickness);
             translate([-200,-200,-1050])
             cube(500);
         }
@@ -348,7 +340,7 @@ module neckpipe_bell_connection(height) {
             translate([0,0,height])
             rotate([90,0,0])
             cylinder(h = tuning_slide_radius*2, r=neckpipe_bell_connection_radius);
-            solid_neckpipe(bell_thickness);
+            solid_neckpipe(neckpipe_wall_thickness);
             solid_bell();
 
             connection_bases(connection_base_clearance);
@@ -405,9 +397,9 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
 
 
         if(solid) {
-            solid_small_tuning_slide_sleeve(bell_thickness);
+            solid_small_tuning_slide_sleeve(neckpipe_wall_thickness);
         } else {
-            small_tuning_slide_sleeve(bell_thickness);
+            small_tuning_slide_sleeve(neckpipe_wall_thickness);
         }
 
         od = neck_pipe_radius*2 + wall_thickness+2;
@@ -452,48 +444,48 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
     }
 }
 
-module connection_bases(tolerance=0.0) {
-    neckpipe_connection_bases(tolerance);
-    bell_connection_bases(tolerance);
+module connection_bases(clearance=0.0) {
+    neckpipe_connection_bases(clearance);
+    bell_connection_bases(clearance);
     
 }
 
-module neckpipe_connection_bases(tolerance=0.0) {
-    neckpipe_connection_base(19, -530, tolerance);
-    neckpipe_connection_base(16, neckpipe_bell_connection_height, tolerance);
+module neckpipe_connection_bases(clearance=0.0) {
+    neckpipe_connection_base(19, -530, clearance);
+    neckpipe_connection_base(16, neckpipe_bell_connection_height, clearance);
 }
 
-module neckpipe_connection_base(translation, height, tolerance) {
+module neckpipe_connection_base(translation, height, clearance) {
     difference() {
         translate([0,-tuning_slide_radius*2+translation, height-3])
         rotate([70,0,0])
         scale([1,1,1])
-        cylinder(r2=6.3+tolerance, r1=3+tolerance, h=19, $fn=8);  
-        neckpipe_implementation(bell_thickness, neck_pipe_radius, true);
+        cylinder(r2=6.3+clearance, r1=3+clearance, h=19, $fn=8);  
+        neckpipe_implementation(neckpipe_wall_thickness, neck_pipe_radius, true);
     }
 }
 
-module bell_connection_bases(tolerance=0.0) {
-    upper_bell_connection_base();
-    lower_bell_connection_base();
+module bell_connection_bases(clearance=0.0) {
+    upper_bell_connection_base(clearance);
+    lower_bell_connection_base(clearance);
 }
 
-module upper_bell_connection_base(tolerance=0.0) {
-    bell_connection_base(-530, tolerance);
+module upper_bell_connection_base(clearance=0.0) {
+    bell_connection_base(-530, clearance);
 }
 
-module lower_bell_connection_base(tolerance=0.0) {
-    bell_connection_base(neckpipe_bell_connection_height, tolerance);
+module lower_bell_connection_base(clearance=0.0) {
+    bell_connection_base(neckpipe_bell_connection_height, clearance);
 }    
 
-module bell_connection_base(height, tolerance) {
+module bell_connection_base(height, clearance) {
 
     cylinder_height=15; 
     difference() {
-        translate([0, -bell_radius_at_height(bell_polygon, height-4)-cylinder_height+5, height])
+        translate([0, -bell_radius_at_height(bell_profile, height-4)-cylinder_height+5, height])
         rotate([-70,0,0])
         scale([1,1,1])
-        cylinder(r2=8+tolerance, r1=1+tolerance, h=cylinder_height, $fn=4);  
+        cylinder(r2=8+clearance, r1=1+clearance, h=cylinder_height, $fn=4);  
         solid_bell();
         }
 }
@@ -521,19 +513,8 @@ module solid_small_tuning_slide_sleeve(wall_thickness) {
 }
 
 module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_height, render_flat_bottom_lip=false) {
-    //rath R4 profile
     
-    // leadpipe 26.145 mouthpiece ends at 0.664 mm
-    // 0.695 inner slide diameter, 139.439 cm long (extends, of course)
-    //  0.725 neck pipe,  26.910 cm long
-   
-    
-    polygon = cut_curve(bell_polygon, min_height, max_height);
-
-    //TODO: cut polygon at desired height and start at desired height
-    //for the current part
-    
-    //render the joint to be glued
+    polygon = cut_curve(bell_profile, min_height, max_height);   
 
     echo("start and end of polygon: " );
     echo(polygon[0]);
@@ -541,7 +522,7 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
 
     rotate_extrude()
     union() {
-        extrude_line(polygon, bell_thickness_2, solid=false);
+        extrude_line(polygon, bell_wall_thickness, solid=false);
         if(render_top_lip) {
             top_joint(polygon);                
         };
@@ -549,84 +530,19 @@ module render_bell_segment(render_bottom_lip, render_top_lip, min_height, max_he
             bottom_joint(polygon); 
         }            
         if (render_flat_bottom_lip) {
-            flat_bottom_joint(bell_polygon, min_height, max_height);
+            flat_bottom_joint(bell_profile, min_height, max_height, bell_wall_thickness);
         } 
     }
-  //  translate(polygon[0] + [0,-1])
-//        polygon(inner_lip);
 }
 
 module solid_bell() {
     rotate_extrude()   
-    bell_profile();
+    solid_bell_profile();
 }
 
-module bell_profile() {
-    extrude_line(bell_polygon, bell_thickness_2, solid=true);
+module solid_bell_profile() {
+    extrude_line(bell_profile, bell_wall_thickness, solid=true);
 }
-
-
-/* render a joint at top of tube. rotate=true means the male part is up instead of down*/
-module top_joint(polygon, rotate=false) {
-
-    difference() {
-        translate(polygon[0]) {
-            if(rotate) {
-                union() {
-                    polygon([[0, 0], [0, joint_slanted_bottom], [0, joint_depth], [joint_width, 0]]);
-//                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
-                    rotate([0,180,180])
-                    polygon(inner_lip);
-                };
-            } else {
-                difference() {
-                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
-                    polygon(lip);
-                };
-            };
-        };
-        extrude_line(polygon, 0, true);
-    };
-}
-
-/* render a joint at bottom of tube. rotate=true means the male part is up instead of down*/
-module bottom_joint(polygon, rotate=false) {
-    difference() {
-        translate(polygon[len(polygon)-1]) {
-            if(rotate) {
-                difference() {
-                    rotate([0,180,180])
-                    polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
-                rotate([0,180,180])
-                  polygon(lip);
-                }
-            } else {           
-                union() {    
-                  polygon([[0, 0], [0, -joint_slanted_bottom], [0, -joint_depth], [joint_width, 0]]);
-                  polygon(inner_lip);
-                }
-  
-            }
-        };
-        extrude_line(polygon, 0, solid=true);
-    };
-}
-
-module flat_bottom_joint(full_curve, min_height, max_height) {
-   curve = cut_curve(full_curve, max_height-joint_overlap, max_height+joint_length);
-   //TODO: nice smooth edge difference() {
-    //    polygon([curve[0]+10, [0, curve[0][1]-2000], [0, curve[0][1]]]);
-  //      bell_profile();
-//    }
-    union() {
-        difference() {
-            extrude_line(curve, bell_thickness_2 + joint_extra_thickness);
-            extrude_line(curve, bell_thickness_2 + joint_clearance);
-        }
-//        polygon(curve[0]
-    }
-}
-
 
 function bell_radius_at_height(curve, height) =
        [for (i = [1:1:len(curve)-1])

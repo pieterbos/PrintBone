@@ -114,65 +114,10 @@ bell_input = [
     ["BESSEL", 14.7/2, 23/2, 1.260, 223],
     ["BESSEL", 23/2, 37/2, 0.894, 72],
     ["BESSEL", 37/2, 61.8/2, 0.7, 36.6],
-    ["BESSEL", 61.8/2, bell_radius, 1, 14.37],
-    
+    ["BESSEL", 61.8/2, bell_radius, 1, 14.37], 
 ];
 
-
-
-bell_polygon = translate_bell_input(bell_input);
-echo("bell:");
-echo(bell_polygon);
-
-//TODO: move this to the bessel.scad file and reuse in other files
-function translate_bell_input(input) =
-    concat_array(
-        [  
-            for (i =[0:len(input)-1]) 
-                translate_cylinder_input(input, i)
-        ]
-    );
-
-function concat_array(input, i=0) = 
-    i >= len(input) ?
-        [] :
-        concat(input[i], concat_array(input, i+1));
-            ;
-
-// Haven't found a better way to define this in openscad. It works...
-function translate_cylinder_input(input, i) =
-    let(value=input[i])
-    value[0] == "CYLINDER" ?
-            [
-                [value[1], -sum_length(input, i)],
-                [value[1], -sum_length(input, i+1)]
-            ]
-            : translate_cone_input(input, i);
-            ;
-
-function translate_cone_input(input, i) =
-    let(value=input[i])
-    value[0] == "CONE" ?
-            [
-                [value[1], -sum_length(input, i)],
-                [value[2], -sum_length(input, i+1)]
-            ]
-            : translate_bessel_input(input, i);
-            ;
-
-function translate_bessel_input(input, i) =
-    let(value=input[i])
-    value[0] == "BESSEL" ?
-//            [value[1], -sum_length(input, i)]
-            2d_bessel_polygon(translation=-sum_length(input, i+1),  throat_radius=value[1], mouth_radius=value[2], length=value[4], flare=value[3], steps=steps)
-            : "ERROR";
-            ;
-     
-// sum the length parameter of all input curves of point i and later. Length is always last
-// input is array of instructions
-function sum_length(input, i, sum = 0) =
-    i >= len(input) ? sum : sum_length(input, i+1, sum + input[i][len(input[i])-1]);
-    
+bell_polygon = create_bell_profile(bell_input);
 
     
 //length 14.37, 61.8mm diameter
