@@ -141,8 +141,7 @@ function abs_diff(o1, o2) =
 module extrude_line(input_curve, wall_thickness, solid=false) {
     //remove consecutive points that are the same. Can't have that here or we'll have very strange results
     extrude_curve = concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]);
-        echo("stripped");
-    echo(len(input_curve)-len(extrude_curve));
+
     outer_wall =  [for (i = [len(extrude_curve)-1:-1:1]) 
                 extrude_curve[i] + 
                 unit_normal_vector(
