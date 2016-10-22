@@ -58,11 +58,14 @@ bell_input = [
     ["BESSEL", 41.18, bell_radius, 1.110, 55.93]
 ];
 
+//render the bottom-most part of the bell flare as a separate piece
+//this can making printing the bell without support easier
+render_bell_flare_in_two_pieces = true;
+two_part_cut_height = -35;
 //where the bell should be cut for printing
-first_bell_cut = -35;
-second_bell_cut = -195;
+first_bell_cut = -195;
+second_bell_cut = first_bell_cut - 195;
 third_bell_cut = second_bell_cut - 195;
-fourth_bell_cut = third_bell_cut - 185;
 
 //thumb brace height. Higher thumb brace = more negative number, sorry bout that
 // the thumb brace should be positioned for easy holding, so close to the slide
@@ -93,7 +96,7 @@ slide_receiver_sleeve_length=25;
 
 
 //which part to render.
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_bottom_top_part";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 //WALL THICKNESSES
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
