@@ -48,9 +48,8 @@ https://github.com/openscad/scad-utils
 https://github.com/openscad/list-comprehension-demos
 http://www.thingiverse.com/thing:71464
 
-Open bell.scad and set the part variable to "all" to render the entire trombone
-
-You might want to edit tuning_slide.scad with a lower detail level if you want to make changes, because it slows everything down.
+Open large_tenor/large_tenor.scad and set the part variable to "all" to render the entire trombone.
+the variables you can set are documented in that scad file.
 
 The ```generate_trombone.sh``` script generates all the models in STL format, with many openscad instances running in parallel. It should take about 20-30 minutes at full detail.
 
