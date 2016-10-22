@@ -49,59 +49,51 @@ rotate([180,0,0]) {
 
 
 
-    //three part bell section render
+    //three part bell section render    
     
     if(part == "all" || part == "bell_top") {
-        union() {
-            render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=fourth_bell_cut, max_height=third_bell_cut);
-            upper_bell_connection_base();
-        }
-    }
-    
-    if(part == "all" || part == "bell_middle_2") {
         union() {
             render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=third_bell_cut, max_height=second_bell_cut);
           lower_bell_connection_base();
         }
     }
     if(part == "all" || part == "bell_middle") {
-        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=second_bell_cut, max_height=first_bell_cut,render_flat_bottom_lip=true);
-          //TODO: move
-    }
-    if(part == "all" || part == "bell_bottom_2") {
-        intersection() {
-            render_bell_bottom();
-            translate([-120,-120,-200])
-            cube([210, 250, 200]);
-        }
-    }
-    
-    if(part == "all" || part == "bell_bottom_1") {
+        render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=second_bell_cut, max_height=first_bell_cut,render_flat_bottom_lip=false);
 
+    }
+    if(part == "all" || part == "bell_bottom_1") {
         intersection() {
-            render_bell_bottom();
+            render_bell_bottom(two_part_cut_height);
             translate([-120+210,-120,-200])
             cube([210, 250, 200]);
         }
     }
     
-    if(part == "bell_bottom") {
-
-        intersection() {
-            render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
-            translate([80,-120,-200])
-            cube([200, 250, 200]);
+    if(render_bell_flare_in_two_pieces) {
+        if(part == "all" || part == "bell_bottom") {
+            intersection() {
+                render_bell_bottom(two_part_cut_height);
+                translate([-120,-120,-200])
+                cube([210, 250, 200]);
+            }
+        }
+        if(part == "all" || part == "bell_bottom_top_part") {
+            intersection() {
+                render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=two_part_cut_height,render_flat_bottom_lip=true);
+                translate([-120,-120,-200])
+                cube([210, 250, 200]);
+            }
+        }
+        
+    } else {    
+        if(part == "all" || part == "bell_bottom") {
+            intersection() {
+                render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+                translate([-120,-120,-200])
+                cube([210, 250, 200]);
+            }
         }
     }
-
-
-    //two part bell - for very high printers!
-    /*union() {
-        render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=-580, max_height=-290);
-        bell_connection_bases();
-    }*/
-    //render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-290, max_height=0);
-
 
     if(part == "all") {
         translated_tuning_slide();
@@ -141,13 +133,10 @@ rotate([180,0,0]) {
     }
     
     if(part == "test_2") {
-
-
                 intersection() {
                 bell_side_neckpipe_bell_connection();
             translate([-50,-220,-375])
                                 cube(100);
-
         }
     }
     
@@ -160,17 +149,10 @@ rotate([180,0,0]) {
     }
 }
 
-module render_bell_bottom() {
-    
-    extra_height  = 0.87; //TODO: get exact height from bell_profile
+module render_bell_bottom(height) {
+   
     union() {
-        render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=first_bell_cut, max_height=0);
-
-    /* difference() {
-                rotate_extrude() 
-                polygon([ [55, -1], [bell_radius+1, -1], [60, first_bell_cut-extra_height], [55, first_bell_cut-extra_height]]);
-                solid_bell();
-        }*/
+        render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=height, max_height=0);
     }
 }
 
