@@ -1,25 +1,22 @@
 use <bent_tubes.scad>
 
-tuning_slide_length = 219.90;
+//uncomment the following  lines to test just this file
 
-tuning_slide_small_length=67.32;
-tuning_slide_large_length=67.32;
-tuning_slide_small_radius = 7.55;
-tuning_slide_large_radius = 9.9;
+//tuning_slide_length = 219.90;
+//tuning_slide_support_height=0.2;
+//pi = 3.14159265359;
+//tuning_slide_radius = tuning_slide_length/pi;
+//tuning_slide_small_length=67.32;
+//tuning_slide_large_length=67.32;
+//tuning_slide_small_radius = 7.55;
+//tuning_slide_large_radius = 9.9;
 
-tuning_bow_wall_thickness = 1.2;
-tuning_slide_wall_thickness = 0.8;
+//tuning_bow_wall_thickness = 1.2;
+//tuning_slide_wall_thickness = 0.8;
 
-$fn=10;
-sweep_steps = 20;
-tuning_slide_step_length_in_degrees = 4;
-
-//the height of the mid-air raft that the slicer will add support to for stability
-tuning_slide_support_height=0.2;
-pi = 3.14159265359;
-tuning_slide_radius = tuning_slide_length/pi;
-
-//uncomment the following two lines to test just this file
+//$fn=10;
+//sweep_steps = 20;
+//tuning_slide_step_length_in_degrees = 4;
 //rotate([-90,0,0])
 //tuning_slide();
 
