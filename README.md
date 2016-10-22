@@ -34,9 +34,12 @@ It plays easily, sounds well and the partials are in tune. A short recording of 
 
 # Can I easily modify it to another model?
 
-You certainly can! The design is mostly parameterized, so you can quite easily change things like the tuning slide diameters, neckpipe diameter, slide receiver and bell profile.
+You certainly can!
 
-I'm currently working on separating the code and the settings, and documenting the changes you need to make, so it's easier to do by others.
+1. Download this code
+2. Download the dependencies
+3. Copy the large_tenor folder to a different one, give it a nice name
+4. Edit the parameters of the .scad file according to the documentation in the file.
 
 # Usage
 
@@ -72,11 +75,9 @@ If you want to print a smaller bell, a smaller printer will do.
 # Known issues
 
 - It needs to be shortened perhaps 5 millimeters, because it does A=442.5 with the tuning slide  all the way in.
-- the connection between the braces and the bell are a bit hard to glue. should be replaced with the connectors on the other side pf the braces
+- the connection between the braces and the bell are a bit hard to glue. should be replaced with the connectors on the other side of the braces
 - the bottom-most t-profile connector of the bell coulf use a bit of more clearance
 - the brace most near the slide could be moved maybe half a centimeter towards the bell for more comfortable holding
-- the code needs to be cleaned up, documented and split into separate files
-- The parameters need to be documented and made more easy to change
 
 # Slide
 
