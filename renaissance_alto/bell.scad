@@ -1,6 +1,8 @@
 /**
-Something like a renaissance alto bell for the Jinbao alto. 
-Bore reducers for the inner slide are probably possible if you remove the lead pipe, they will be added later
+Something like a renaissance alto bell for the Jinbao alto. WARNING: This is not an accurate reproduction of a historic instrument!
+Bore reducers for the inner slide are probably possible if you remove the lead pipe, they should be added later
+
+This file still needs work so it can be integrated with the generic bell and tuning slide scripts
 */
 
 use <Curved_Pipe_Library_for_OpenSCAD/curvedPipe.scad>;
