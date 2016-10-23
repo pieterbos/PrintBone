@@ -24,7 +24,7 @@ function lip() =
 
 
 /* render a joint at top of tube. rotate=true means the male part is up instead of down*/
-module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance) {
+module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance, solid=false) {
     
     difference() {
         translate(polygon[0]) {
@@ -38,7 +38,9 @@ module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance)
             } else {
                 difference() {
                     polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
-                    polygon(lip());
+                    if(!solid()) {
+                        polygon(lip());
+                    }
                 };
             };
         };
@@ -47,7 +49,7 @@ module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance)
 }
 
 /* render a joint at bottom of tube. rotate=true means the male part is up instead of down*/
-module bottom_joint(polygon, rotate=false, joint_clearance=default_joint_clearance) {
+module bottom_joint(polygon, rotate=false, joint_clearance=default_joint_clearance, solid=false) {
     difference() {
         translate(polygon[len(polygon)-1]) {
             if(rotate) {
@@ -55,7 +57,9 @@ module bottom_joint(polygon, rotate=false, joint_clearance=default_joint_clearan
                     rotate([0,180,180])
                     polygon([[0, 0], [0, joint_slanted_bottom], [joint_width, joint_depth], [joint_width, 0]]);
                 rotate([0,180,180])
-                  polygon(lip());
+                    if(!solid) {
+                      polygon(lip());
+                    }
                 }
             } else {
                 union() {    

@@ -88,7 +88,7 @@ rotate([180,0,0]) {
     } else {    
         if(part == "all" || part == "bell_bottom") {
             intersection() {
-                render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=-190, max_height=0);
+                render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);
                 translate([-120,-120,-200])
                 cube([210, 250, 200]);
             }
@@ -108,9 +108,15 @@ rotate([180,0,0]) {
     //#check_slide_clearance(neckpipe_wall_thickness);
     if(part == "all" || part == "neckpipe_bottom") {
         bottom_part_of_neckpipe(neckpipe_wall_thickness);
+        if(render_neckpipe_bell_connection_with_neckpipe) {
+            bell_side_neckpipe_bell_connection();
+        }
     }
     if(part == "all" || part == "neckpipe_top") {
         top_part_of_neckpipe(neckpipe_wall_thickness);
+        if(render_neckpipe_bell_connection_with_neckpipe) {
+            tuning_slide_side_neckpipe_bell_connection();
+        }
     }
     if(part == "neckpipe") {        
         rotate([-90,0,0]) {
@@ -140,12 +146,13 @@ rotate([180,0,0]) {
         }
     }
     
-
-    if(part == "all" || part == "connection_bottom") {
-        bell_side_neckpipe_bell_connection();
-    }
-    if(part == "all" || part == "connection_top") {
-        tuning_slide_side_neckpipe_bell_connection();
+    if(!render_neckpipe_bell_connection_with_neckpipe) {
+        if(part == "all" || part == "connection_bottom") {
+            bell_side_neckpipe_bell_connection();
+        }
+        if(part == "all" || part == "connection_top") {
+            tuning_slide_side_neckpipe_bell_connection();
+        }
     }
 }
 
@@ -202,13 +209,17 @@ module slide_receiver(wall_thickness, solid = false) {
     } else {
             cylinder(r2=slide_receiver_large_radius + wall_thickness, r1=slide_receiver_small_radius +wall_thickness, h=slide_receiver_length);
     }
-    
-        edge_for_locknut_length=2.5;
+
+
+        edge_for_locknut_length= 2.5;
+        outer_edge_for_locknut_length = solid ? edge_for_locknut_length +10: edge_for_locknut_length;
     edge_for_locknut_thickness = 1.5;
         translate([0,0,slide_receiver_length-edge_for_locknut_length])
         difference() {
-            cylinder(r=slide_receiver_large_radius + wall_thickness+edge_for_locknut_thickness, h=edge_for_locknut_length);
+            cylinder(r=slide_receiver_large_radius + wall_thickness+edge_for_locknut_thickness, h=outer_edge_for_locknut_length);
             cylinder(r=slide_receiver_large_radius + wall_thickness, h=edge_for_locknut_length);
+        }
+        if(solid) {
         }
     
         if(!solid) {
@@ -232,7 +243,7 @@ module bell_side_neckpipe_bell_connection() {
 }
 
 module tuning_slide_side_neckpipe_bell_connection() {
-    neckpipe_bell_connection(-530);
+    neckpipe_bell_connection(top_neckpipe_bell_connection_height);
 
 }
 
@@ -256,7 +267,7 @@ module neckpipe_bell_connection(height) {
 module bottom_part_of_neckpipe(wall_thickness) {
     intersection() {
         translate([-50, -tuning_slide_radius*2-50, -480])
-        cube(190);
+        cube(neckpipe_cut_height);
            neckpipe(wall_thickness);
     }
     translate([0, -tuning_slide_radius*2, -480])
@@ -269,14 +280,14 @@ module bottom_part_of_neckpipe(wall_thickness) {
 module top_part_of_neckpipe(wall_thickness) {
     intersection() {
         translate([-50, -tuning_slide_radius*2-50, -670])
-        cube(190);
+        cube(neckpipe_cut_height);
                    neckpipe(wall_thickness);
     }
     bottom_joint_height=10;
-    translate([0, -tuning_slide_radius*2, -670+190-bottom_joint_height])
+    translate([0, -tuning_slide_radius*2, -670+neckpipe_cut_height-bottom_joint_height])
     rotate_extrude()
     
-    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance);
+    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance,solid=false);
 }
 
 module neckpipe(wall_thickness) {
@@ -293,7 +304,12 @@ module neckpipe(wall_thickness) {
 //a solid neckpipe. useful in difference with some other things
 module solid_neckpipe(wall_thickness) {
     neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=true);
+        bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance, solid=true);
     connection_bases();
+    bottom_joint_height=10;
+    translate([0, -tuning_slide_radius*2, -670+neckpipe_cut_height-bottom_joint_height])
+    rotate_extrude()    
+    bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance, solid=true);
 }
 
 module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, check_slide_clearance=false) {
@@ -353,8 +369,11 @@ module connection_bases(clearance=0.0) {
 }
 
 module neckpipe_connection_bases(clearance=0.0) {
-    neckpipe_connection_base(19, -530, clearance);
-    neckpipe_connection_base(16, neckpipe_bell_connection_height, clearance);
+    if(!render_neckpipe_bell_connection_with_neckpipe) {
+        neckpipe_connection_base(19, top_neckpipe_bell_connection_height, clearance);
+        neckpipe_connection_base(16, neckpipe_bell_connection_height, clearance);
+    }
+
 }
 
 module neckpipe_connection_base(translation, height, clearance) {
@@ -373,7 +392,7 @@ module bell_connection_bases(clearance=0.0) {
 }
 
 module upper_bell_connection_base(clearance=0.0) {
-    bell_connection_base(-530, clearance);
+    bell_connection_base(top_neckpipe_bell_connection_height, clearance);
 }
 
 module lower_bell_connection_base(clearance=0.0) {
