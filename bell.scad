@@ -54,12 +54,12 @@ rotate([180,0,0]) {
     if(part == "all" || part == "bell_top") {
         union() {
             render_bell_segment(render_bottom_lip=true, render_top_lip=false, min_height=third_bell_cut, max_height=second_bell_cut);
-          lower_bell_connection_base();
+            upper_bell_connection_base();
         }
     }
     if(part == "all" || part == "bell_middle") {
         render_bell_segment(render_bottom_lip=true, render_top_lip=true, min_height=second_bell_cut, max_height=first_bell_cut,render_flat_bottom_lip=false);
-
+          lower_bell_connection_base();
     }
     if(part == "all" || part == "bell_bottom_1") {
         intersection() {

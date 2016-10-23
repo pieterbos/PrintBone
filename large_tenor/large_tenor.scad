@@ -1,8 +1,7 @@
 //CONSTANTS
 pi = 3.14159265359;
 
-//steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 300;
+
 
 //TUNING SLIDE PARAMETERS
 tuning_slide_length = 219.90;
@@ -15,6 +14,8 @@ tuning_bow_wall_thickness = 1.2;
 tuning_slide_wall_thickness = 0.8;
 
 //DETAIL PARAMETERS
+//steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
+$fn = 300;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
 sweep_steps = 100;
@@ -22,7 +23,7 @@ sweep_steps = 100;
 //set to 1 for a really smooth tuning slide and LONG rendering time
 tuning_slide_step_length_in_degrees = 1;
 //set to 300 for when you want to print
-tuning_slide_fn=100;
+tuning_slide_fn=300;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
 steps=200;
@@ -100,7 +101,7 @@ slide_receiver_sleeve_length=25;
 
 
 //which part to render.
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 //WALL THICKNESSES
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
