@@ -17,5 +17,5 @@ mkdir -p output
 "$openscad" -o output/neckpipe_bottom.stl -Dpart=\"neckpipe_bottom\" ./large_tenor.scad &
 "$openscad" -o output/neckpipe_top.stl -Dpart=\"neckpipe_top\" ./large_tenor.scad &
 "$openscad" -o output/tuning_slide.stl -Dpart=\"tuning_slide\" ./large_tenor.scad &
-"$openscad" -o output/connection_bottom.stl -Dpart=\"connection_bottom\" ./large_tenor.scad & 
-"$openscad" -o output/connection_top.stl -Dpart=\"connection_top\" ./large_tenor.scad &
+#"$openscad" -o output/connection_bottom.stl -Dpart=\"connection_bottom\" ./large_tenor.scad & 
+#"$openscad" -o output/connection_top.stl -Dpart=\"connection_top\" ./large_tenor.scad &

@@ -3,49 +3,56 @@ pi = 3.14159265359;
 
 
 
-//TUNING SLIDE PARAMETERS
-tuning_slide_length = 219.90;
+/* [TUNING SLIDE PARAMETERS] */
+// the length of the tube of the tuning slide. You usually not change this for a regular Bb trombone :)
+tuning_slide_length = 219.90; // [50:350]
+// the length of the small diameter tube of the tuning slide
 tuning_slide_small_length=67.32;
+// the length of the large diameter tube of the tuning slide
 tuning_slide_large_length=67.32;
+// the radius of the small diameter tube of the tuning slide
 tuning_slide_small_radius = 7.55;
+// the radius of the large diameter tube of the tuning slide
 tuning_slide_large_radius = 9.9;
 
+// the wall thickness of the tuning slide
 tuning_bow_wall_thickness = 1.2;
+// the wall thickness of the tuning slide tubes that go into the trombone
 tuning_slide_wall_thickness = 0.8;
 
-//DETAIL PARAMETERS
+/* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 300;
+$fn = 20;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
-sweep_steps = 100;
+sweep_steps = 20;
 //determines the level of detail of the tuning slide tube. Lower = higher quality
 //set to 1 for a really smooth tuning slide and LONG rendering time
-tuning_slide_step_length_in_degrees = 1;
+tuning_slide_step_length_in_degrees = 4;
 //set to 300 for when you want to print
-tuning_slide_fn=300;
+tuning_slide_fn=20;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=200;
+steps=20;
 
 //the tuning slide will be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
 //the height determines the ease of removal. 0.2 works well
 tuning_slide_support_height=0.2;
 
-//TUNING SLIDE RECEIVER PARAMETERS
+/* TUNING SLIDE RECEIVER PARAMETERS */
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
 tuning_slide_spacing = 0.1;
 //the receiver can be slightly longer than the slide
 tuning_sleeve_extra_length = 0;
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
-
+// tuning slide radius, do not set this parameter, it is calculated based on length
 tuning_slide_radius = tuning_slide_length/pi;
 
 
 
-
+/* [BELL PARAMETERS]*/
 //the radius of the bell in mm
 bell_radius = 108.60; 
 
