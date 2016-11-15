@@ -81,5 +81,8 @@ If you want to print a smaller bell, a smaller printer will do.
 
 # Slide
 
-It might be very possible to create a slide, given a source of rigid thinwalled tubing with the right diameters, and a good material for stockings.
-Tips on how to obtain suitable tubes for a slide are welcome.
+A prototype slide is in progress, complete with replaceable leadpipe. The first prototype will use 3/4 and 5/8 inch PVC-pipes. It will be easy to change the design to use carbon fiber tubes later on - so that's what I will do next. 
+I tested the leadpipe design with an existing slide and that seems to work. Carbon tubes should sound good, that's been done before. PVC might or might not sound good.
+The first design is finished and the file slide.scad contains everything you need to print the parts to create your own slide.
+
+Thin-walled precision carbon tubes are relatively expensive, about €120-€140 for a slide. Tips on how to obtain affordable suitable tubes for a slide are welcome.
