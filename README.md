@@ -81,8 +81,14 @@ If you want to print a smaller bell, a smaller printer will do.
 
 # Slide
 
-A prototype slide is in progress, complete with replaceable leadpipe. The first prototype will use 3/4 and 5/8 inch PVC-pipes. It will be easy to change the design to use carbon fiber tubes later on - so that's what I will do next. 
-I tested the leadpipe design with an existing slide and that seems to work. Carbon tubes should sound good, that's been done before. PVC might or might not sound good.
-The first design is finished and the file slide.scad contains everything you need to print the parts to create your own slide.
+The first prototype slide has been made with PVC pipes and printed parts, including a leadpipe. Stockings were made of tape, processed with sandpaper to make them smoother for better slide action and better airtightness..
 
-Thin-walled precision carbon tubes are relatively expensive, about €120-€140 for a slide. Tips on how to obtain affordable suitable tubes for a slide are welcome.
+The leadpipe plays well and with just a PVC tube (no slide) it sounds well. 
+
+PVC tubes are of course not nearly stiff enough to work well as a slide. The stockings are not enough to be airtight and they make the slide action quite bad.
+
+The next step will be better stockings - either some low friction tape or 3d-printed stockings. Then once that has been solved carbon fiber tubes.
+
+To play with the slide design, check slide.scad and the stl files in the slide_out/ directory.
+
+Any hints on good slide design are welcome, as are tips to inexpensively obtain thin-walled tubes - carbon fiber or otherwise!
