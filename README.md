@@ -81,7 +81,9 @@ If you want to print a smaller bell, a smaller printer will do.
 
 # Slide
 
-The first prototype slide has been made with PVC pipes and printed parts, including a leadpipe. Stockings were made of tape, processed with sandpaper to make them smoother for better slide action and better airtightness..
+The first prototype slide has been made with PVC pipes and printed parts, including a leadpipe. Stockings were made of tape, processed with sandpaper to make them smoother for better slide action and better airtightness.
+
+http://imgur.com/a/jYNtB
 
 The leadpipe plays well and with just a PVC tube (no slide) it sounds well. 
 
