@@ -52,9 +52,9 @@ bell_connector_large_radius = 54.7/pi/2;
 bell_connector_length = 31.5;
 
 
-stockings_length=80;
-stocking_wall_thickness=0.4;
-stocking_clearance=0.1;
+stockings_length=90;
+stocking_wall_thickness=0.37;
+stocking_clearance=0.05;
 
 slide_crook_sleeve_radius=outer_slide_tube_outer_radius+2;
 
@@ -93,8 +93,8 @@ leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - 0.4;
 
 echo(leadpipe_venturi_radius);
 echo(leadpipe_end_radius);
-/*
-#inner_slide_tubes();
+
+/*#inner_slide_tubes();
 #outer_slide_tubes();
 
 slide_crook();
@@ -115,11 +115,11 @@ union() {
 //intersection() {
 //inner_slide_grip();
 //outer_slide_grip();
-slide_crook();
+//slide_crook();
 //translate([100,0,0])
 //    top_oversleeve(13, 100, solid=true);
 //}//*/
-
+stocking();
 //leadpipe();
 /* renders a leadpipe with the set parameters, that can have extra_radius.
 it can be solid or not and it can have a bit of extra length at the outside
@@ -388,7 +388,7 @@ module stocking() {
     rotate([90,0,0])
     difference() {
         cylinder(r=inner_slide_tube_outer_radius + stocking_clearance + stocking_wall_thickness, h= stockings_length);
-        inner_slide_tubes(stocking_clearance, solid=true);
+        cylinder(r=inner_slide_tube_outer_radius + stocking_clearance, h=stockings_length);
     }
 }
 
