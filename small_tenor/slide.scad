@@ -18,14 +18,21 @@ $fn=360;
 //sooooo, 52.25 slide_crook_length (should be called width);
 //that means 52.25*pi = 164.148 tube length in the crook
 
-slide_crook_tube_length=164.148;
-slide_crook_radius=7.5;//15 mm diameter, with my 15/16 outers
-slide_crook_wall_thickness=2.0;
-
 pi = 3.14159265359;
-slide_crook_length=slide_crook_tube_length/pi;
-echo("crook width:");
-echo(slide_crook_length);
+
+//slide_crook_tube_length=164.148;
+//slide_crook_length=slide_crook_tube_length/pi;
+slide_crook_length=52.35;//52.35 was the best so far, smaller=worse
+slide_crook_tube_length = slide_crook_length*pi;
+slide_crook_radius=7.5;//15 mm diameter, with my 15/16 outers
+slide_crook_wall_thickness=1.6; //to ensure airtightness. 1.6mm might work 
+
+
+
+echo(str("crook width: ", slide_crook_length, "mm"));
+
+echo(str("crook tube length: ",slide_crook_tube_length), "mm");
+
 
 sweep_steps=300;
 circle_steps=1;
@@ -34,13 +41,17 @@ slide_tube_length=700;
 
 //the distance between hand grip and end of inner slide
 
-hand_grip_distance = 18;
-oversleeve_length=75;
+hand_grip_distance = 6.5;
+oversleeve_length=27;
 
 slide_crook_sleeve_length=30;
 
 
 //these can be bought in carbon tubes.
+
+slide_grip_inner_slide_clearance=0.04;//0.06=slightly too big
+slide_grip_clearance = 1.2;
+slide_grip_wall_thickness=1.6;
 
 inner_slide_tube_inner_radius=12/2;
 inner_slide_tube_outer_radius=14/2;//(25.4*(5/8))/2;
@@ -55,11 +66,9 @@ oversleeve_radius = outer_slide_tube_outer_radius + oversleeve_wall_thickness;
 
 outer_oversleeve_wall_thickness = 1.2;
 
-outer_oversleeve_radius = outer_slide_tube_outer_radius + outer_oversleeve_wall_thickness;
+outer_oversleeve_radius = outer_slide_tube_outer_radius + slide_grip_inner_slide_clearance + outer_oversleeve_wall_thickness;
 
-slide_grip_inner_slide_clearance=0.1;
-slide_grip_clearance = 1.2;
-slide_grip_wall_thickness=1.6;
+
 
 //TODO: measure conn 48h and input here
 bell_connector_small_radius = 50/pi/2;
@@ -143,7 +152,16 @@ union() {
 //    top_oversleeve(13, 100, solid=true);
 //}//*/
 //stocking();
-slide_crook();
+//slide_crook_sleeve(slide_crook_length);
+//slide_crook();
+//outer_slide_grip();
+
+
+difference() {
+    outer_slide_grip();
+    translate([-20, -slide_tube_length-5 , -slide_crook_length-100]) cube(100);
+    translate([-20, -slide_tube_length-5 , +slide_crook_length]) cube(100);
+}
 /* renders a leadpipe with the set parameters, that can have extra_radius.
 it can be solid or not and it can have a bit of extra length at the outside
  */
@@ -260,10 +278,37 @@ module bottom_oversleeve(radius, length, start_position=0) {
     cylinder(r=radius, h=length);    
 }
 
+/* looks cool, print withtou support?*/
 
+module slide_crook_insert() {
+        inset_height=1.2;
+        rotate([0,90,0])
+        translate([0,0,-inset_height/2])
+        linear_extrude(height=inset_height, scale=[1,1], twist=0) {
+            difference() {
+                circle(r=slide_crook_length);
+                                    rotate([0,0, 90])
+                translate([0,0])
+                scale([1,1.3])
+                circle(r=slide_crook_length-15, $fn=3);
+                translate([-150,-230])
+                square(200);
+            }
+        }
+        
+        rotate([0,90,0])
+        rotate_extrude(angle=180){
+            translate([slide_crook_length-7.9,0])
+            rotate([0,180])
+            scale([1,2.2])
+            circle($fn=3, r=3.5);
+        }
+}    
 module slide_crook() {
+
     difference() {
         union() {
+            //the connection between the slide bow and sleeves needs a gradual diameter change
             difference() {
                 union() {
                     translate([0,3,slide_crook_length])
@@ -272,8 +317,12 @@ module slide_crook() {
                     translate([0,3,-slide_crook_length])
                     rotate([90,0,0])
                     cylinder(r1=slide_crook_radius+slide_crook_wall_thickness-0.1, r2=slide_crook_sleeve_radius, h=3);
+                    
+                   //slide_crook_insert();
                 }
                 slide_bow(solid=true);
+                slide_crook_sleeve(slide_crook_length, solid=true);
+                slide_crook_sleeve(-slide_crook_length, solid=true);
             }
             slide_bow(solid=false);
             slide_crook_sleeve(slide_crook_length);
@@ -284,11 +333,51 @@ module slide_crook() {
     
 }
 
+//slide_end_stops();
+//little things to put on the top of the outer slides to prevent damage to the
+//relatively fragile ends of the carbon fiber tubes
+module slide_end_stops() {
+    clearance = 0.04;
+    wall_overlap=0.4;
+
+    difference() {
+        cylinder(r=max(9, outer_slide_tube_outer_radius+clearance+0.8), h=3.5);
+        translate([0,0,2.5])
+        cylinder(r=outer_slide_tube_outer_radius +clearance - wall_overlap,h=1);
+        cylinder(r=outer_slide_tube_outer_radius + clearance,h=2.5);
+    }
+}
+
 module slide_bow(solid=false) {
+
+    
     rotate([0,90,0])
+
     rotate_extrude(angle=180, $fn=sweep_steps) {
         difference() {
             translate([slide_crook_length, 0, 0])
+            rotate([0,0,90])
+            circle(r=slide_crook_radius+slide_crook_wall_thickness, center=true);
+            if(!solid) {
+                translate([slide_crook_length, 0, 0])
+                circle(r=slide_crook_radius, center=true);
+            }
+        }
+    };
+
+}
+
+//Work in progress
+module straight_slide_bow(solid=false) {
+
+    
+    rotate([0,90,0])
+
+    translate([slide_crook_length/3, 0, 0])
+    rotate_extrude(angle=90, $fn=sweep_steps) {
+        difference() {
+            translate([slide_crook_length/1.5, 0, 0])
+
             circle(r=slide_crook_radius+slide_crook_wall_thickness, center=true);
             if(!solid) {
                 translate([slide_crook_length, 0, 0])
@@ -296,33 +385,56 @@ module slide_bow(solid=false) {
             }
         }
     }
-  /*  bent_tube(length=slide_crook_tube_length,
-        
-        radius1=slide_crook_radius,
-        radius2=slide_crook_radius,
-        degrees=180,
-        wall_thickness=slide_crook_wall_thickness,
-        solid=solid, 
-        sweep_steps = sweep_steps, circle_steps=circle_steps);*/
+    
+    rotate([0,-90,0])
+    translate([slide_crook_length/3, 0, 0])
+    rotate_extrude(angle=90, $fn=sweep_steps) {
+        difference() {
+            translate([slide_crook_length/1.5, 0, 0])
+
+            circle(r=slide_crook_radius+slide_crook_wall_thickness, center=true);
+            if(!solid) {
+                translate([slide_crook_length, 0, 0])
+                circle(r=slide_crook_radius, center=true);
+            }
+        }
+    }
+    
+   translate([0,slide_crook_length/1.5, -slide_crook_length/3])
+    difference() {     
+        cylinder(r=slide_crook_radius+slide_crook_wall_thickness, h=slide_crook_length/1.5);
+        if(!solid) {
+            cylinder(r=slide_crook_radius, h=slide_crook_length/1.5);
+        }
+    }
+
 }
 
-module slide_crook_sleeve(translate) {
+module slide_bow_print_helper() {
+    triangle_length = 30;
+    translation_thingy = (slide_crook_radius+slide_crook_wall_thickness)/2;
+    translate([-triangle_length/2, slide_crook_length, 0])
+    rotate([0,90,0])
+    cylinder($fn=6, r=slide_crook_radius+slide_crook_wall_thickness, h=triangle_length);
+
+    translate([-18.67, slide_crook_length-4.3, 0])
+    rotate([-35,90,0])
+    cylinder($fn=6, r=slide_crook_radius+slide_crook_wall_thickness, h=5);
+
+    translate([triangle_length/2-translation_thingy, slide_crook_length-0.8+translation_thingy/2, 0])
+    rotate([35,90,0])
+    cylinder($fn=6, r=slide_crook_radius+slide_crook_wall_thickness, h=8);
+}
+
+module slide_crook_sleeve(translate, solid=false) {
     difference() {
         translate([0,0,translate])
         rotate([90,0,0])
         cylinder(r=slide_crook_sleeve_radius, h=slide_crook_sleeve_length);
-        outer_slide_tubes(extra_radius=slide_grip_inner_slide_clearance, solid=true);
+        if(!solid) {
+            outer_slide_tubes(extra_radius=slide_grip_inner_slide_clearance, solid=true);
+        }
     }
-    /*difference() {
-        translate([0,0,translate])
-        rotate([90,0,0])
-
-        translate([0,0,-5])
-        cylinder(r1=slide_crook_sleeve_radius-5, r2=slide_crook_sleeve_radius, h=5);
-        translate([0,1.2,0])
-        outer_slide_tubes(extra_radius=slide_grip_inner_slide_clearance, solid=true);
-        slide_bow(solid=true);
-    }*/
 }
     
 module outer_slide_tubes(extra_radius=0, solid=false) {
