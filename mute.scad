@@ -22,7 +22,7 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 100;
+$fn = 360;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
 sweep_steps = 20;
@@ -33,7 +33,7 @@ tuning_slide_step_length_in_degrees = 4;
 tuning_slide_fn=20;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=100;
+steps=300;
 
 //the tuning slide will be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
@@ -119,7 +119,7 @@ part = "mute";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckp
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
 neckpipe_wall_thickness = 1.6;
 //the wall thickness of the bell. For 8.5 inch, 1.6 works great. For tiny bells, 1.2 is enough.
-bell_wall_thickness = 1.6;
+bell_wall_thickness = 1.2;
 
 //NECKPIPE
 neck_pipe_length = 269.10;
@@ -240,8 +240,8 @@ rotate([180,0,0]) {
         
       render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=-100, max_height=0);
 
-      //     rotate_extrude()
-        extrude_line([[20,-bell_wall_thickness], [5,-bell_wall_thickness], [4.7, -4], [4, -6], [4,-40]], 
+          rotate_extrude()
+        extrude_line([[20,0], [5,0], [4.7, -4], [4, -6], [4,-70]], 
             bell_wall_thickness,
             solid=false, remove_doubles=false,
         top_point_add=[0, bell_wall_thickness]);
