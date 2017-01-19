@@ -84,12 +84,12 @@ If you want to print a smaller bell, a smaller printer will do.
 
 # Slide
 
-The first prototype slide has been made with PVC pipes and printed parts, including a leadpipe. Stockings were printed single wall PLS, processed with sandpaper to make them smoother for better slide action and better airtightness. Lubricate with slide cream, liquid lubricants do not work well.
+A full PVC slide with printed parts has been made, including stockings. It works, but does not sound great, especially at lower volumes. Lubricate with slide cream, slide-o-mix or yamaha does not work well.
 
 http://imgur.com/a/jYNtB
 
-PVC tubes work as a slide, but are not great. Carbon tubes would be much better and it's easy to modify the design for those.
+Also a Carbon fiber outer slide has been made, design has been modified so it prints without supports. A Bach 42B inner slide fits stock 15mm inner diameter 16mm outer diameter carbon tubes - although 14.9mm would be better. Slide action and looks are great, sound is very good but would be better with 14.9mm.
+
+A carbon fiber inner slide should be possible, or perhaps brass inner slides - China has some very inexpensive custom tube manufacturers.
 
 To play with the slide design, check slide.scad and the stl files in the slide_out/ directory.
-
-Any hints are welcome on where to inexpensively obtain thin-walled tubes - carbon fiber or otherwise!
