@@ -58,12 +58,13 @@ bell_radius = 108.60;
 
 bell_input = [
     ["CONE", 20, 25, 6],
-    ["BESSEL", 25, 47, 0.6, 100],
+    ["BESSEL", 25, 85, 0.8, 108],
 
-    ["CONE", 47, 49, 8],
-
-    ["BESSEL", 49, 20, -0.4, 20]
+    ["CYLINDER", 85, 0.1],
+    ["BESSEL", 85, 45, -0.6, 35]
 ];
+
+
 
 //render the bottom-most part of the bell flare as a separate piece
 //this can making printing the bell without support easier
@@ -113,7 +114,7 @@ part = "mute";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckp
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
 neckpipe_wall_thickness = 1.6;
 //the wall thickness of the bell. For 8.5 inch, 1.6 works great. For tiny bells, 1.2 is enough.
-bell_wall_thickness = 1.2;
+bell_wall_thickness = 1.6;
 
 //NECKPIPE
 neck_pipe_length = 269.10;
@@ -149,8 +150,20 @@ include <tuning_slide.scad>;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_profile2 = create_bell_profile(bell_input, steps);
-bell_profile = concat(bell_profile2, [[20,0], [5,-0.0001], [4.7, -4], [5, -6], [5,-60]]);
+bell_profile = concat(bell_profile2, [[20,0], [5,-0.0001], [4.7, -4], [5, -6], [5,-35]]);
 echo(bell_profile);
+
+bell_polygon_thingy = [["BESSEL", 10, 108, 0.8, 508]];
+bell_profile_full = create_bell_profile(bell_polygon_thingy, steps);
+
+render_bell_profile = false;
+if(render_bell_profile) {
+translate([0, 0, 40])
+rotate([-90,0,0])
+//rotate([180,0,0])
+//rotate_extrude()
+ extrude_line(bell_profile_full, bell_wall_thickness, solid=false);
+}
 
 //the height of the bell minus tuning slide receiver length
 //TODO: get rid of the 'minus tuning slide receiver length?
