@@ -138,27 +138,27 @@ function abs_diff(o1, o2) =
     
 //from a single line, make a wall_thickness wide 2d polygon.
 //translates along the normal vector without checking direction, so be careful :)
-module extrude_line(input_curve, wall_thickness, solid=false, remove_doubles=true, top_point_add=0) {
+module extrude_line(input_curve, wall_thickness, solid=false, remove_doubles=true, normal_walls=true) {
     //remove consecutive points that are the same. Can't have that here or we'll have very strange results
-
-    top_point_add = top_point_add == 0 ? [-wall_thickness, 0] : top_point_add;
-
 
     extrude_curve = remove_doubles ? concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]) : input_curve;
 
 
     outer_wall =  [for (i = [len(extrude_curve)-1:-1:1]) 
-                extrude_curve[i] + 
-                unit_normal_vector(
-                    extrude_curve[i-1],
-                    extrude_curve[i]
-                )*wall_thickness
+                //normal_walls ? 
+                    extrude_curve[i] + 
+                    unit_normal_vector(
+                        extrude_curve[i-1],
+                        extrude_curve[i] 
+                    )*wall_thickness
+                    
+                    //extrude_curve[i] + [wall_thickness, 0]
         ];
 
     //make sure we have a horizontal edge both at the top and bottom
     //to ensure good printing and gluing possibilities
-    bottom_point = [extrude_curve[len(extrude_curve)-1]+[0, wall_thickness]];
-    top_point = [extrude_curve[0]+top_point_add];
+    bottom_point = [extrude_curve[len(extrude_curve)-1]+[wall_thickness, 0]];
+    top_point = [extrude_curve[0]+[wall_thickness, 0]];
 
     outer_curve = concat(
             bottom_point,

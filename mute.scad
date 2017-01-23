@@ -33,7 +33,7 @@ tuning_slide_step_length_in_degrees = 4;
 tuning_slide_fn=20;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=300;
+steps=100;
 
 //the tuning slide will be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
@@ -57,18 +57,12 @@ tuning_slide_radius = tuning_slide_length/pi;
 bell_radius = 108.60; 
 
 bell_input = [
+    ["CONE", 20, 25, 6],
+    ["BESSEL", 25, 47, 0.6, 100],
 
-    ["CYLINDER", tuning_slide_large_receiver_inner_radius, tuning_slide_large_length+tuning_sleeve_extra_length],
-    ["CONE", 10.53, 11.05, 53.36],
-    ["BESSEL", 11.05, 15.07, 1.260, 150.42],
-    ["BESSEL", 15.07, 22.28, 0.894, 150.42],
-    ["BESSEL", 10, 12, 5, 5],
-    ["BESSEL", 12, 14, 5, 5],
-    ["BESSEL", 14, 38, 0.65, 60],
-    ["BESSEL", 38, 40, 0.8, 4],
-    ["BESSEL", 40, 41.18, 1.0, 4],
-    ["BESSEL", 41.18, 40.18, -0.05, 3],
-    ["BESSEL", 40.18, 20, -0.25, 20]
+    ["CONE", 47, 49, 8],
+
+    ["BESSEL", 49, 20, -0.4, 20]
 ];
 
 //render the bottom-most part of the bell flare as a separate piece
@@ -154,7 +148,9 @@ use <connections.scad>;
 include <tuning_slide.scad>;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
-bell_profile = create_bell_profile(bell_input, steps);
+bell_profile2 = create_bell_profile(bell_input, steps);
+bell_profile = concat(bell_profile2, [[20,0], [5,-0.0001], [4.7, -4], [5, -6], [5,-60]]);
+echo(bell_profile);
 
 //the height of the bell minus tuning slide receiver length
 //TODO: get rid of the 'minus tuning slide receiver length?
@@ -238,13 +234,8 @@ rotate([180,0,0]) {
 
     if(part == "mute") {
         
-      render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=-100, max_height=0);
+      render_bell_segment(render_bottom_lip=false, render_top_lip=false, min_height=-200, max_height=0);
 
-          rotate_extrude()
-        extrude_line([[20,0], [5,0], [4.7, -4], [4, -6], [4,-70]], 
-            bell_wall_thickness,
-            solid=false, remove_doubles=false,
-        top_point_add=[0, bell_wall_thickness]);
         
     }
     if(part == "all") {
