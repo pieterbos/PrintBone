@@ -14,12 +14,14 @@ $fn = 300;
 //for development 50 is enought, for printing set to 100-150
 steps=150;
 
+mute_base_radius=25;
+
 
 /* [BELL PARAMETERS]*/
 //the mute, as a series of bessel curves
 mute_input = [
     ["BESSEL", 24, 49, 0.6, 108],
-    ["BESSEL", 49, 20, -0.4, 40]
+    ["BESSEL", 49, 25, -0.6, 40]
 ];
 
 //the thickness of the cork used, for visualization
@@ -44,7 +46,7 @@ hole_diameter_small=3.5;
 hole_diameter_bottom = 4.6;
 
 bell_input = [
-//the printbone
+//part of the printbone, for reference
     ["BESSEL", 15.07, 22.28, 0.894, 150.42],
     ["BESSEL", 22.28, 41.18, 0.494, 96.85],
     ["BESSEL", 41.18, 8.5*25.4/2, 1.110, 55.93]
@@ -94,7 +96,11 @@ if(render_cork) {
 
 module mute_bottom(){
     radius_at_top_of_bottom = bell_radius_at_height(bell_profile, bell_wall_thickness)+bell_wall_thickness;
-    polygon(points=[[hole_diameter_bottom,0], [20,0], [radius_at_top_of_bottom, bell_wall_thickness], 
+    radius_a_bit_higher = bell_radius_at_height(bell_profile, bell_wall_thickness*2.5)+bell_wall_thickness;
+    polygon(points=[[hole_diameter_bottom,0], [25,0],
+        [radius_a_bit_higher, bell_wall_thickness*2.5],
+        [radius_at_top_of_bottom-4, bell_wall_thickness], 
+//[radius_at_top_of_bottom, bell_wall_thickness], 
         [hole_diameter_bottom, bell_wall_thickness]]);
 }
 
