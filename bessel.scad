@@ -10,21 +10,21 @@ Array of input. First element defines type:
 ["BESSEL", r_small, r_large, flare, length]
 
 bell_input = [
-    ["CYLINDER", tuning_slide_large_receiver_inner_radius, 40],
+    ["CYLINDER", 10/2, 40],
     ["CONE", 10.2/2, 10.3/2, 15],
     ["CONE", 10.3/2, 12.7/2, 44],
     ["BESSEL", 14.7/2, 23/2, 1.260, 223],
     ["BESSEL", 23/2, 37/2, 0.894, 72],
     ["BESSEL", 37/2, 61.8/2, 0.7, 36.6],
-    ["BESSEL", 61.8/2, bell_radius, 1, 14.37], 
+    ["BESSEL", 61.8/2, 8.5*25.4/2, 1, 14.37], 
 ];
 
 bell_polygon = create_bell_profile(bell_input, steps=100);
 
 rotate_extrude()
-extrude_line(bell_polygon, wall_thickness=2, solid=false);
-
+extrude_line(bell_polygon, wall_thickness=2, solid=false, normal_walls=true);
 */
+
 
 use <array_iterator.scad>;
 /*
@@ -141,19 +141,12 @@ function abs_diff(o1, o2) =
 module extrude_line(input_curve, wall_thickness, solid=false, remove_doubles=true, normal_walls=true) {
     //remove consecutive points that are the same. Can't have that here or we'll have very strange results
 
-    extrude_curve = remove_doubles ? concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON ) input_curve[i]]) : input_curve;
-
-
+    extrude_curve = remove_doubles ? concat([input_curve[0]], [for (i = [1:1:len(input_curve)-1]) if(abs_diff(input_curve[i][1], input_curve[i-1][1]) > EPSILON || abs_diff(input_curve[i][0], input_curve[i-1][0]) > 0.001) input_curve[i]]) : input_curve;
+        echo("walls normal?", normal_walls);
     outer_wall =  [for (i = [len(extrude_curve)-1:-1:1]) 
-                //normal_walls ? 
-                    extrude_curve[i] + 
-                    unit_normal_vector(
-                        extrude_curve[i-1],
-                        extrude_curve[i] 
-                    )*wall_thickness
-                    
-                    //extrude_curve[i] + [wall_thickness, 0]
-        ];
+                    extrude_curve[i] + get_thickness_vector(normal_walls, wall_thickness, extrude_curve, i)
+                    ];
+
 
     //make sure we have a horizontal edge both at the top and bottom
     //to ensure good printing and gluing possibilities
@@ -187,6 +180,17 @@ module extrude_line(input_curve, wall_thickness, solid=false, remove_doubles=tru
     );
     }
 }
+
+function get_thickness_vector (normal_walls, wall_thickness, extrude_curve, i) =
+        let( normal_vector = unit_normal_vector(extrude_curve[i-1], extrude_curve[i]))
+        (normal_walls) ? 
+            normal_vector * wall_thickness 
+        : (
+                //horizontal walls need special treatment in this case
+                normal_vector == [0,1] ? [0,-wall_thickness]:
+                [wall_thickness, 0]
+        );
+
 function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, flare, steps=30) =    
 
     //inner curve of the bell
@@ -246,5 +250,18 @@ function cut_curve_at_height2(curve, min_height, max_height) =
                curve[i]             
         ]
     );
-            ;
     
+            
+function radius_at_height(curve, height) =
+        lookup(height, reverse_key_value(curve));
+      /* [for (i = [1:1:len(curve)-1])
+            if( curve[i-1][1] <= height && curve[i][1] >= height)
+               curve[i][0]            
+        ][0]
+            ;*/
+            
+function reverse_key_value(array) = 
+    [for (i = [1:1:len(array)-1])
+        [-array[i][1], array[i][0]]
+    ];
+
