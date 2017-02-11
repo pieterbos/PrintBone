@@ -85,7 +85,7 @@ function translate_bessel_input(input, i, steps) =
     let(value=input[i])
     value[0] == "BESSEL" ?
 //            [value[1], -sum_length(input, i)]
-            2d_bessel_polygon(translation=-sum_length(input, i+1),  throat_radius=value[1], mouth_radius=value[2], length=value[4], flare=value[3], steps=steps)
+            2d_bessel_polygon(translation=sum_length(input, i+1),  throat_radius=value[1], mouth_radius=value[2], length=value[4], flare=value[3], steps=steps)
             : "ERROR";
             ;
      
@@ -201,7 +201,7 @@ function 2d_bessel_polygon(translation=0, throat_radius, mouth_radius, length, f
     )
 
     [for (i = array_iterator(x_zero, step_size, x_zero + length)) 
-         [bell_diameter(b, i, flare), i-(x_zero+length)] + [0, translation]
+         [bell_diameter(b, i, flare), -(i-(x_zero+length))] + [0, translation]
     ];
 
 
