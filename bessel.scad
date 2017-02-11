@@ -75,8 +75,8 @@ function translate_cone_input(input, i, steps) =
     let(value=input[i])
     value[0] == "CONE" ?
             [
-                [value[1], -sum_length(input, i)],
-                [value[2], -sum_length(input, i+1)]
+                [value[1], sum_length(input, i)],
+                [value[2], sum_length(input, i+1)]
             ]
             : translate_bessel_input(input, i, steps);
             ;
@@ -161,7 +161,7 @@ module extrude_line(input_curve, wall_thickness, solid=false, remove_doubles=tru
     
     if(!solid) {
         // a bug in openscad causes small polygons with many points to render a MUCH lower resolution.
-
+        //so scale up by factor 100 
         scale([0.01, 0.01, 0.01])   
         polygon( points=
            concat(
@@ -228,7 +228,7 @@ function unit_normal_vector(p1, p2) =
         dx = p2[0]-p1[0],
         dy = p2[1]-p1[1]
         ) 
-        [dy, -dx]/norm([dy,-dx]);
+        [-dy, dx]/norm([-dy,dx]);
 
 function cut_curve_at_height(curve, min_height, max_height) =
     concat(
@@ -253,7 +253,7 @@ function cut_curve_at_height2(curve, min_height, max_height) =
     
             
 function radius_at_height(curve, height) =
-        lookup(height, reverse_key_value(curve));
+        lookup(-height, reverse_key_value(curve));
       /* [for (i = [1:1:len(curve)-1])
             if( curve[i-1][1] <= height && curve[i][1] >= height)
                curve[i][0]            
@@ -261,7 +261,7 @@ function radius_at_height(curve, height) =
             ;*/
             
 function reverse_key_value(array) = 
-    [for (i = [1:1:len(array)-1])
+    [for (i = [len(array)-1:-1:1])
         [-array[i][1], array[i][0]]
     ];
 

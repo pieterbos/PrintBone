@@ -51,7 +51,8 @@ bell_input = [
 ];
 bell_height = sum_length(mute_input, 0);
 bell_profile_full = create_bell_profile(bell_input, 50);
-
+echo(bell_profile);
+echo(bell_radius_at_height(bell_profile, bell_height-tapered_area_height-2.2));
 cork_bessel = [
     ["BESSEL", bell_profile[0][0], bell_profile[0][0]+3.55, 0.6, tapered_area_height],
     ["CONE", bell_profile[0][0]+3.55, bell_radius_at_height(bell_profile, bell_height-tapered_area_height-2.2), 2.2]
@@ -59,10 +60,10 @@ cork_bessel = [
 
 cork_profile = create_bell_profile(cork_bessel, 50);
 
-render_bell_profile=true;
+render_bell_profile=false;
 
 if(render_bell_profile) {
-    %translate([0, 0, 39])
+    translate([0, 0, 39])
 rotate([90,0,0])
 //rotate_extrude()
     extrude_line(input_curve=bell_profile_full, wall_thickness=bell_wall_thickness, solid=false, remove_doubles=true, normal_walls=true);
@@ -115,8 +116,6 @@ module cork_profile(thickness=bell_wall_thickness) {
         //rotate_extrude()
         extrude_line(input_curve=cork_profile, wall_thickness=thickness, solid=true, remove_doubles=true, normal_walls=false);
 }
-
-
 
 module solid_mute_profile() {
     extrude_line(bell_profile, bell_wall_thickness, solid=true, normall_walls=false);
