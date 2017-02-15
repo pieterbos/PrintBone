@@ -12,7 +12,7 @@ bell_wall_thickness = 1.2;
 $fn = 300;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to 100-150
-steps=150;
+steps=100;
 
 mute_base_radius=25;
 
@@ -20,7 +20,7 @@ mute_base_radius=25;
 /* [BELL PARAMETERS]*/
 //the mute, as a series of bessel curves
 mute_input = [
-    ["BESSEL", 24, 49, 0.6, 108],
+    ["BESSEL", 25, 49, 0.6, 108],
     ["BESSEL", 49, 25, -0.6, 40]
 ];
 
@@ -53,8 +53,8 @@ bell_input = [
 ];
 bell_height = sum_length(mute_input, 0);
 bell_profile_full = create_bell_profile(bell_input, 50);
-echo(bell_profile);
-echo(bell_radius_at_height(bell_profile, bell_height-tapered_area_height-2.2));
+
+
 cork_bessel = [
     ["BESSEL", bell_profile[0][0], bell_profile[0][0]+3.55, 0.6, tapered_area_height],
     ["CONE", bell_profile[0][0]+3.55, bell_radius_at_height(bell_profile, bell_height-tapered_area_height-2.2), 2.2]
@@ -71,6 +71,124 @@ rotate([90,0,0])
     extrude_line(input_curve=bell_profile_full, wall_thickness=bell_wall_thickness, solid=false, remove_doubles=true, normal_walls=true);
 }
 
+letter_height=52;
+second_line_height=48;
+letter_rotation=-21;
+translate([0,0,letter_height])
+    rotate([0,0,0])
+    writeOnMute(
+        text="PrintBone", 
+        radius=radius_at_height(bell_profile, letter_height)+bell_wall_thickness-0.4, 
+        letter_rotation=letter_rotation,
+        h=8.5);
+/*translate([0,0,second_line_height])
+    rotate([0,0,0])
+    writeOnMute(
+        text="Practice Mute", 
+        radius=radius_at_height(bell_profile, second_line_height, h=1)+bell_wall_thickness-0.5,
+        letter_rotation=letter_rotation-4,
+        h=6,
+east=2, font="Arial"
+    );*/
+
+module writeOnMute(text,radius,letter_rotation, h=5, t=1, east=0, west=0, space =1.0, font){
+    bold=0;
+	center=false;
+	rotate=0;			// text rotation (clockwise)
+
+    pi2=pi*2;
+    up =0;		 //mm up from center on face of cube
+	down=0;
+    
+	wid=(.125* h *5.5 * space);
+	widall=wid*(text_width(text, 0, len(text)-1))/2; 
+	//angle that measures width of letters on sphere
+	function NAngle(radius)=(wid/(pi2*radius))*360*(1-abs(rotate)/90);
+	//angle of half width of text
+
+	function mmangle(radius)=(widall/(pi2*radius)*360);
+			translate([0,0,up-down])
+			rotate(east-west,[0,0,1])
+			for (r=[0:len(text)-1]){
+				rotate(-90+(text_width(text, 0, r)*NAngle(radius)),[0,0,1])
+				translate([radius,0,-r*((rotate)/90*wid)+(text_width(text, 0, len(text)-1))/2*((rotate)/90*wid)])
+                rotate([0,letter_rotation,0])
+				rotate(90,[1,0,0])
+				rotate(93.5,[0,1,0])
+                linear_extrude(height=t)
+                text(text[r], center=true, size=h, font=font);
+		//echo("zloc=",height/2-r*((rotate)/90*wid)+(len(text)-1)/2*((rotate)/90*wid));
+			}
+
+}
+//the text/write module does not provide spacing or kerning data
+//so here it is for the default font. Set to 1 for monospaced fonts for all letters :)
+font_spacing_data = [
+["a", 1.15],
+["b", 1.12],
+["c", 1.1],
+["d", 1],
+["e", 1.2],
+["f", 1],
+["g", 1],
+["h", 1],
+["i", 0.6],
+["j", 0.7],
+["k", 1],
+["l", 0.6],
+["m", 1.75],
+["n", 1.2],
+["o", 1.17],
+["p", 1.15],
+["q", 1],
+["r", 0.7],
+["s", 1.1],
+["t", 0.8],
+["u", 1.3],
+["v", 1],
+["w", 1],
+["x", 1],
+["y", 1],
+["z", 1],
+["A", 1.4],
+["B", 1.4],
+["C", 1.4],
+["D", 1.4],
+["E", 1.4],
+["F", 1.4],
+["G", 1.4],
+["H", 1.4],
+["I", 1.4],
+["J", 1.4],
+["K", 1.4],
+["L", 1.4],
+["M", 1.8],
+["N", 1.4],
+["O", 1.4],
+["P", 1.45],
+["Q", 1.4],
+["R", 1.4],
+["S", 1.4],
+["T", 1.3],
+["U", 1.3],
+["V", 1.3],
+["W", 1.3],
+["X", 1.3],
+["Y", 1.3],
+["Z", 1.3],
+[" ", 0.8]
+];
+
+function text_width(string, index, max_len) =
+    max_len == 0 ? 0 :
+    (index >= max_len-1 ? 
+        text_width_one_letter(string, index) : 
+        text_width_one_letter(string, index) + text_width(string, index+1, max_len));
+
+function text_width_one_letter(string, index) =
+    font_spacing_data[search(string[index], font_spacing_data)[0]][1];
+    
+
 rotate_extrude()
 union(){
     extrude_line(bell_profile, bell_wall_thickness, solid=false, remove_doubles=true, normal_walls=false);
@@ -81,6 +199,7 @@ union(){
         cork_profile();    
         solid_mute_profile();
     }
+
 }   
 
 //render the cork to test fit
