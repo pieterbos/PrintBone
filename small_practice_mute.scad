@@ -58,12 +58,14 @@ bell_radius = 108.60;
 
 bell_input = [
     ["CONE", 20, 25, 6],
-    ["BESSEL", 25, 47, 0.6, 100],
+    ["BESSEL", 25, 49, 0.6, 108],
 
-    ["CONE", 47, 49, 8],
+//    ["CONE", 47, 49, 8],
 
-    ["BESSEL", 49, 20, -0.4, 20]
+    ["BESSEL", 49, 20, -0.4, 40]
 ];
+
+mute_bottom = [[20,0], [5,-0.0001], [4.7, -4], [5, -6], [5,-40]];
 
 //render the bottom-most part of the bell flare as a separate piece
 //this can making printing the bell without support easier
@@ -149,7 +151,7 @@ include <tuning_slide.scad>;
 
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_profile2 = create_bell_profile(bell_input, steps);
-bell_profile = concat(bell_profile2, [[20,0], [5,-0.0001], [4.7, -4], [5, -6], [5,-60]]);
+bell_profile = concat(bell_profile2, mute_bottom);
 echo(bell_profile);
 
 //the height of the bell minus tuning slide receiver length
