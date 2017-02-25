@@ -228,7 +228,9 @@ function unit_normal_vector(p1, p2) =
         ) 
         [dy, -dx]/norm([dy,-dx]);
 
-         
+//HACK: openSCAD has no debug printing in functions.
+//use this to print debug statements in a function
+// by typing: let(debug = debugprint("whatever you want to print") 
 function debugprint(s) = search(s, []);
             
 function radius_at_height(curve, height) =
