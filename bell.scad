@@ -15,6 +15,11 @@ include <tuning_slide.scad>;
 //the curve (not really a polygon, just a set of points for now!) of the bell
 bell_profile = create_bell_profile(bell_input, steps);
 
+//ECHO THE BELL PROFILE
+//for(t= [0:len(bell_profile)-1]) {
+//    echo(str(2790+bell_profile[t][1],",",bell_profile[t][0]*2,";"));
+//}
+
 //the height of the bell minus tuning slide receiver length
 //TODO: get rid of the 'minus tuning slide receiver length?
 total_bell_height = -sum_length(bell_input, 1); 
@@ -403,7 +408,7 @@ module bell_connection_base(height, clearance) {
 
     cylinder_height=15; 
     difference() {
-        translate([0, -bell_radius_at_height(bell_profile, height-4)-cylinder_height+5, height])
+        translate([0, -radius_at_height(bell_profile, height-4)-cylinder_height+5, height])
         rotate([-70,0,0])
         scale([1,1,1])
         cylinder(r2=8+clearance, r1=1+clearance, h=cylinder_height, $fn=4);  
@@ -465,9 +470,3 @@ module solid_bell_profile() {
     extrude_line(bell_profile, bell_wall_thickness, solid=true);
 }
 
-function bell_radius_at_height(curve, height) =
-       [for (i = [1:1:len(curve)-1])
-            if( curve[i-1][1] <= height && curve[i][1] >= height)
-               curve[i][0]            
-        ][0]
-            ;

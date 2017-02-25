@@ -97,9 +97,16 @@ function sum_length(input, i, sum = 0) =
 
 
 function cut_curve(curve, min_height, max_height) = 
-    cut_curve_at_height2( //bell_polygon,
-        cut_curve_at_height(curve, min_height, max_height)
-        , min_height, max_height);
+    concat(
+        [[radius_at_height(curve, min_height), min_height]],
+        [
+            for (i = [0:1:len(curve)-1])
+                if(curve[i][1] >= min_height && curve[i][1] <= max_height)
+                   curve[i]             
+        ],
+        [[radius_at_height(curve, max_height), max_height]]
+    );
+
 
 /* 
 Renders a cone shaped tube.
@@ -221,25 +228,13 @@ function unit_normal_vector(p1, p2) =
         ) 
         [dy, -dx]/norm([dy,-dx]);
 
-function cut_curve_at_height(curve, min_height, max_height) =
-    concat(
-        [
-            for (i = [0:1:len(curve)-2])
-                if(curve[i+1][1] >= min_height)// && curve[i][1] <= max_height)
-                   curve[i]             
-        ],
-        [for (i = [len(curve)-1]) if(curve[i][1] >= min_height) curve[i]]
-    );
+         
+function debugprint(s) = search(s, []);
             
-function cut_curve_at_height2(curve, min_height, max_height) =
-
-    concat(
-        [for (i = [0]) if(curve[i][1] <= max_height) curve[0]],
-        [
-        for (i = [1:1:len(curve)-1])
-            if( curve[i][1] <= max_height)
-               curve[i]             
-        ]
-    );
-            ;
-    
+function radius_at_height(curve, height) =
+        lookup(height, reverse_key_value(curve));
+            
+function reverse_key_value(array) = 
+    [for (i = [len(array)-1:-1:1])
+        [array[i][1], array[i][0]]
+    ];
