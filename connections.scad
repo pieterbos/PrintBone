@@ -16,7 +16,7 @@ lip_slant=1;
 lip_length=7;
 
 
-function inner_lip(joint_clearance=default_joint_clearance) = 
+function inner_lip(joint_clearance=0.13) = 
     [[lip_start+joint_clearance, 0], [lip_start+lip_slant +joint_clearance, lip_length-joint_clearance], [lip_end-lip_slant-joint_clearance, lip_length-joint_clearance], [lip_end-joint_clearance, 0]];
 
 function lip() = 
@@ -24,7 +24,7 @@ function lip() =
 
 
 /* render a joint at top of tube. rotate=true means the male part is up instead of down*/
-module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance, solid=false) {
+module top_joint(polygon, rotate=false, joint_clearance=0.13, solid=false) {
     
     difference() {
         translate(polygon[0]) {
@@ -49,7 +49,7 @@ module top_joint(polygon, rotate=false, joint_clearance=default_joint_clearance,
 }
 
 /* render a joint at bottom of tube. rotate=true means the male part is up instead of down*/
-module bottom_joint(polygon, rotate=false, joint_clearance=default_joint_clearance, solid=false) {
+module bottom_joint(polygon, rotate=false, joint_clearance=0.13, solid=false) {
     difference() {
         translate(polygon[len(polygon)-1]) {
             if(rotate) {
@@ -73,7 +73,7 @@ module bottom_joint(polygon, rotate=false, joint_clearance=default_joint_clearan
     };
 }
 
-module flat_bottom_joint(full_curve, min_height, max_height, bell_thickness, joint_clearance=default_joint_clearance,) {
+module flat_bottom_joint(full_curve, min_height, max_height, bell_thickness, joint_clearance=0.13,) {
    curve = cut_curve(full_curve, max_height-joint_overlap, max_height+joint_length);
    //TODO: nice smooth edge difference() {
     //    polygon([curve[0]+10, [0, curve[0][1]-2000], [0, curve[0][1]]]);

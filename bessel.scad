@@ -98,13 +98,14 @@ function sum_length(input, i, sum = 0) =
 
 function cut_curve(curve, min_height, max_height) = 
     concat(
-        [[radius_at_height(curve, min_height), min_height]],
+        curve[0][1] < min_height ? [[radius_at_height(curve, min_height), min_height]] : [],
         [
             for (i = [0:1:len(curve)-1])
                 if(curve[i][1] >= min_height && curve[i][1] <= max_height)
                    curve[i]             
         ],
-        [[radius_at_height(curve, max_height), max_height]]
+        curve[len(curve)-1][1] >= max_height ? [[radius_at_height(curve, max_height), max_height]] : []
+        
     );
 
 

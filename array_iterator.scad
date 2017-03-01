@@ -3,7 +3,7 @@
  */
 function array_iterator(start, step, end) =
     let(result = [for (i=[start:step:end]) i ]) 
-    result[len(result)-1] == end ? result :
+    abs(result[len(result)-1] - end) < 0.000001 ? result :
     concat(
         result,
         [end]

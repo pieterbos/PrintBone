@@ -22,8 +22,8 @@ bell_profile = create_bell_profile(bell_input, steps);
 
 //the height of the bell minus tuning slide receiver length
 //TODO: get rid of the 'minus tuning slide receiver length?
-total_bell_height = -sum_length(bell_input, 1); 
-
+total_bell_height = -sum_length(bell_input, 0); 
+echo("total bell height", total_bell_height);
 rotate([180,0,0]) {
 
     //temporary render for a test
@@ -195,7 +195,7 @@ module check_slide_clearance(wall_thickness) {
 module translated_tuning_slide() {
     old_fn = $fn;
     $fn=tuning_slide_fn;    
-    translate([0,-tuning_slide_radius,total_bell_height-tuning_slide_small_length]) {
+    translate([0,-tuning_slide_radius, total_bell_height]) {//total_bell_height-tuning_slide_small_length]) {
         rotate([270,0,0]) {
             tuning_slide();
         }
@@ -319,11 +319,9 @@ module solid_neckpipe(wall_thickness) {
 
 module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, check_slide_clearance=false) {
 
-        if(solid) {
-            solid_small_tuning_slide_sleeve(neckpipe_wall_thickness);
-        } else {
-            small_tuning_slide_sleeve(neckpipe_wall_thickness);
-        }
+
+        small_tuning_slide_sleeve(neckpipe_wall_thickness, solid);
+
 
         od = neck_pipe_radius*2 + wall_thickness+2;
         id = solid? 0.0005 : neck_pipe_radius*2;
@@ -342,7 +340,8 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
         goose_neck_angle=atan(goose_neck_y_length/goose_neck_x_length);
 
         //neck pipe, including gooseneck
-        translate([0, -tuning_slide_radius *2, total_bell_height + tuning_sleeve_extra_length])
+        //LOOK HERE
+        translate([0, -tuning_slide_radius *2, total_bell_height + tuning_slide_small_length + tuning_sleeve_extra_length])
             curvedPipe([ [0,0,0],
 				[0,0,goose_neck_start],
 				[0,-goose_neck_offset,slide_receiver_begin]				
@@ -353,14 +352,14 @@ module neckpipe_implementation(wall_thickness, neck_pipe_radius, solid=false, ch
                 id);
     
         //slide receiver
-        translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])
+        translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_slide_small_length+ tuning_sleeve_extra_length + slide_receiver_begin])
         rotate([goose_neck_angle, 0, 0])
         slide_receiver(wall_thickness, solid);
     
 
     
     if(check_slide_clearance) {
-        translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_sleeve_extra_length + slide_receiver_begin])    
+        translate([0, -tuning_slide_radius *2-goose_neck_offset, total_bell_height + tuning_slide_small_length + tuning_sleeve_extra_length + slide_receiver_begin])    
             rotate([goose_neck_angle, 0, 0])
             cylinder(r=5, h=730);
 
@@ -417,7 +416,7 @@ module bell_connection_base(height, clearance) {
 }
 
 module small_tuning_slide_sleeve(wall_thickness, solid=false) {
-    translate([0, -tuning_slide_radius *2, total_bell_height-tuning_slide_small_length])
+    translate([0, -tuning_slide_radius *2, total_bell_height])
     difference() {
         cylinder(h = tuning_slide_small_length + tuning_sleeve_extra_length, r = tuning_slide_small_radius + tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
         if(!solid) {
@@ -425,7 +424,7 @@ module small_tuning_slide_sleeve(wall_thickness, solid=false) {
         }
     };
     
-    translate([0, -tuning_slide_radius *2, total_bell_height])
+    translate([0, -tuning_slide_radius *2, total_bell_height+tuning_slide_small_length])
     difference() {
         cylinder(h=20, r2=neck_pipe_radius+wall_thickness, r1=tuning_slide_small_radius + +tuning_slide_wall_thickness + tuning_slide_spacing + wall_thickness);
         if(!solid) {

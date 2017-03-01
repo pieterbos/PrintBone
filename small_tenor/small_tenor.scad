@@ -13,27 +13,27 @@ tuning_slide_large_length=67.32;
 // the radius of the small diameter tube of the tuning slide
 tuning_slide_small_radius = 12/2;
 // the radius of the large diameter tube of the tuning slide
-tuning_slide_large_radius = 16.7/2;
+tuning_slide_large_radius = 15.0/2;
 
 // the wall thickness of the tuning slide
-tuning_bow_wall_thickness = 1.2;
+tuning_bow_wall_thickness = 1.6;
 // the wall thickness of the tuning slide tubes that go into the trombone
 tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 25;
+$fn = 15;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
 sweep_steps = 10;
 //determines the level of detail of the tuning slide tube. Lower = higher quality
 //set to 1 for a really smooth tuning slide and LONG rendering time
-tuning_slide_step_length_in_degrees = 16;
+tuning_slide_step_length_in_degrees = 32;
 //set to 300 for when you want to print
-tuning_slide_fn=20;
+tuning_slide_fn=10;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=150;
+steps=10;
 
 //the tuning slide will be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
@@ -42,7 +42,7 @@ tuning_slide_support_height=0.2;
 
 /* TUNING SLIDE RECEIVER PARAMETERS */
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
-tuning_slide_spacing = 0.1;
+tuning_slide_spacing = 0.12;
 //the receiver can be slightly longer than the slide
 tuning_sleeve_extra_length = 0;
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
@@ -56,18 +56,21 @@ tuning_slide_radius = tuning_slide_length/pi;
 //the radius of the bell in mm
 bell_radius = 177.8/2; 
 
+
 //453.62 total length
 bell_input = [
 
-    ["CYLINDER", tuning_slide_large_receiver_inner_radius, tuning_slide_large_length+tuning_sleeve_extra_length],
-    ["CONE", tuning_slide_large_receiver_inner_radius, tuning_slide_large_receiver_inner_radius+0.4, 53.36],
-    ["BESSEL", tuning_slide_large_receiver_inner_radius+0.4, 13, 1.260, 453.62-125-85.13-61.75-31-53.36],
-    ["BESSEL", 13, 19, 1.6, 125],
-    ["BESSEL", 19, 30.5, 1.4, 85.13],
-//    ["BESSEL", 31, 39, 1.5, 30.75],
-    ["BESSEL", 30.5, 42, 0.8, 34],
-    ["BESSEL", 42, bell_radius, 0.8, 60]/**/
-   /* ["BESSEL", tuning_slide_large_receiver_inner_radius, bell_radius, 1, 453.62]/**/
+    ["CYLINDER", tuning_slide_large_receiver_inner_radius, tuning_slide_large_length],
+    ["CONE", tuning_slide_large_receiver_inner_radius, 16.3/2, 506.9-494],
+    ["BESSEL", 16.3/2, 19/2, 1.6, 494-411.5],
+    ["BESSEL", 19/2, 25.6/2, 1.6, 411.5-292],
+    ["BESSEL", 25.6/2, 33.7/2, 1.6, 292-200],
+    ["BESSEL", 33.7/2, 43.9/2, 1.5, 200-122.3],
+    ["BESSEL", 43.9/2, 60.8/2, 0.32, 122.3-65],
+    ["BESSEL", 60.8/2, 84/2, 1.4, 65-35],
+
+    ["BESSEL", 84/2, 111.4/2, 0.5, 35-17],
+    ["BESSEL", 111.4/2, bell_radius, 0.95, 17]
 ];
 
 //render the bottom-most part of the bell flare as a separate piece
@@ -94,7 +97,7 @@ slide_receiver_clearance = -0.02;
 /* clearance for the connectors on the braces between bell and neckpipe. Increase for looser fit */
 connection_base_clearance = 0.15;
 //The clearances of the glue joints
-joint_clearance = 0.1;
+joint_clearance = 0.13;
 
 
 //SLIDE RECEIVER
@@ -120,9 +123,9 @@ neckpipe_wall_thickness = 1.6;
 //the wall thickness of the bell. For 8.5 inch, 1.6 works great. For tiny bells, 1.2 is enough.
 bell_wall_thickness = 1.6;
 
-//NECKPIPE
+//NECKPIPE. 
 neck_pipe_length = 269.10;
-neck_pipe_radius = 12/2; //inner radius of the neckpipe
+neck_pipe_radius = 12.4/2; //inner radius of the neckpipe
 
 //the braces between neckpipe and bell radius.
 neckpipe_bell_connection_radius=6.5;

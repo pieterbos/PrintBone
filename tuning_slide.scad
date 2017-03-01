@@ -64,7 +64,7 @@ module tuning_slide_no_support(solid=false) {
 }
 
 module tuning_slide_bow(solid=false) {
-    bent_tube(tuning_slide_length, tuning_slide_small_radius, tuning_slide_large_radius, 180, tuning_bow_wall_thickness, solid, sweep_steps, tuning_slide_step_length_in_degrees);
+    bent_tube(tuning_slide_length, tuning_slide_small_radius, tuning_slide_large_radius, 180, tuning_bow_wall_thickness, solid, sweep_steps, $fn=360/tuning_slide_step_length_in_degrees);
 }
 
 
