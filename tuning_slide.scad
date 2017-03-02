@@ -14,8 +14,8 @@ tuning_slide_large_radius = 9.9;
 tuning_bow_wall_thickness = 1.2;
 tuning_slide_wall_thickness = 0.8;
 
-$fn=50;
-sweep_steps = 75;
+$fn=20;
+sweep_steps = 30;
 tuning_slide_step_length_in_degrees = 4;
 //rotate([-90,0,0])
     tuning_slide(false);
