@@ -1,6 +1,37 @@
+use <scad-utils/transformations.scad>
+use <list-comprehension-demos/skin.scad>
+
+//the circle in shapes.scad is no good here, it stops one point too early
+//causing a gap
+function circle(r) = [for (i=[0:$fn]) let (a=i*360/$fn) r * [cos(a), sin(a)]];
+function reverse(list) = [for (i = [0:len(list)-1]) list[len(list)-1-i]];
+
+
+module tube(r1, r2, R, th, fn, degrees, solid)
+{
+    outer_r1 = r1+th;
+    outer_r2 = r2 +th;
+    if(solid) {
+        skin([for(i=[0:fn]) 
+          transform(rotation([0,degrees/fn*i,0])*translation([-R,0,0]), 
+                circle(outer_r1+(outer_r2-outer_r1)/fn*i)        
+        )]);
+    } else {
+
+        skin([for(i=[0:fn]) 
+          transform(rotation([0,degrees/fn*i,0])*translation([-R,0,0]), 
+            concat(
+                circle(outer_r1+(outer_r2-outer_r1)/fn*i),
+                reverse(circle(r1+(r2-r1)/fn*i))
+            )
+        )]);
+    }
+       
+
+}
 pi = 3.14159265359;
-bent_tube(length=500, radius1=10, radius2=15, degrees=180, wall_thickness=2.4, 
-    solid=false, sweep_steps=10, $fn=64);
+bent_tube(length=500, radius1=10, radius2=25, degrees=180, wall_thickness=2.4, 
+    solid=false, sweep_steps=10, $fn=200);
 
 /**
  * Render a bent tube with tube length 'length', radius at point 0 'radius1', radius at end 'radius2'
@@ -11,53 +42,18 @@ bent_tube(length=500, radius1=10, radius2=15, degrees=180, wall_thickness=2.4,
  */
 module bent_tube(length, radius1, radius2, degrees=180, wall_thickness=1.2, solid=false, sweep_steps = 25, method="hull") {
     
-    
     //the radius of the curve in the pipe, NOT of the tube diameters
     bend_radius = length/pi;
     
-    rotate([0,90,0])
-    difference() {
-        rod(r1=radius1+wall_thickness, 
-            r2=radius2+wall_thickness, 
-            angle=degrees,
-            steps=sweep_steps,
-            bow_radius=bend_radius
+    rotate([-90,-90,0])
+
+        tube(r1=radius1, 
+            r2=radius2, 
+            degrees=degrees,
+            fn=sweep_steps,
+            R=bend_radius,
+    
+            th=wall_thickness,
+            solid=solid
         );
-        if(!solid) {
-            rod(r1=radius1, 
-                r2=radius2, 
-                extra_angle=degrees/sweep_steps+5,
-                angle=degrees,
-                steps=sweep_steps,
-                bow_radius=bend_radius
-            );
-        }
-    }
-
-}
-
-module rod(r1=10, r2=15, extra_angle=0, angle=180, wall_thickness=1.6, steps=10, bow_radius=100) {
-    stepsize = angle/steps;
-    angle_step = (r2/r1-1)/angle;
-    if(extra_angle > stepsize) {
-        for(t = [-extra_angle:stepsize: 0-stepsize]) {
-            hull() {
-                rod_segment(t, bow_radius, angle_step, r1);
-                rod_segment(t+stepsize, bow_radius, angle_step, r1);
-            }
-        }
-    }
-    for(t = [0:stepsize:angle-stepsize+extra_angle]) {
-        hull() {
-            rod_segment(t, bow_radius, angle_step, r1);
-            rod_segment(t+stepsize, bow_radius, angle_step, r1);
-        }
-    }
-}
-
-module rod_segment(t, bow_radius, angle_stepsize, r1) {
-    rotate([90,0,t])
-        translate([bow_radius, 0,0])
-        scale([1+t*angle_stepsize,1+t*angle_stepsize,1])
-        cylinder(height=0.0000001, r=r1, center=true);
 }
