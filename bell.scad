@@ -104,10 +104,7 @@ rotate([180,0,0]) {
         translated_tuning_slide();
     }
     if(part == "tuning_slide") {
-        old_fn = $fn;
-        $fn = tuning_slide_fn;
-        tuning_slide();
-        $fn = old_fn;
+        tuning_slide( $fn = tuning_slide_fn);
     }
 
     //#check_slide_clearance(neckpipe_wall_thickness);
@@ -171,7 +168,7 @@ module render_bell_bottom(height) {
 module  tuning_slide_test_one() {
     //print only the small tuning slide peg thing
     intersection() {
-        tuning_slide();
+        tuning_slide($fn=tuning_slide_fn);
         translate([-50,-100,0])
         cube(100);
     }
@@ -193,14 +190,12 @@ module check_slide_clearance(wall_thickness) {
 }
 
 module translated_tuning_slide() {
-    old_fn = $fn;
-    $fn=tuning_slide_fn;    
+
     translate([0,-tuning_slide_radius, total_bell_height]) {//total_bell_height-tuning_slide_small_length]) {
         rotate([270,0,0]) {
-            tuning_slide();
+            tuning_slide($fn=tuning_slide_fn);
         }
     };
-    $fn = old_fn;
 }
 
 module slide_receiver(wall_thickness, solid = false) {

@@ -15,6 +15,14 @@ tuning_slide_small_radius = 12/2;
 // the radius of the large diameter tube of the tuning slide
 tuning_slide_large_radius = 15.0/2;
 
+//you probably won't need to change this
+bump_angle_1 = 25;
+bump_angle_2 = 335;
+bump_height = 3;
+bump_divisor = bump_angle_1/bump_height;
+transition_to_bow_height = 3;
+
+
 // the wall thickness of the tuning slide
 tuning_bow_wall_thickness = 1.6;
 // the wall thickness of the tuning slide tubes that go into the trombone
@@ -22,20 +30,20 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 15;
+$fn = 120;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
-sweep_steps = 10;
+sweep_steps = 150;
 //determines the level of detail of the tuning slide tube. Lower = higher quality
 //set to 1 for a really smooth tuning slide and LONG rendering time
-tuning_slide_step_length_in_degrees = 32;
-//set to 300 for when you want to print
-tuning_slide_fn=10;
+tuning_slide_step_length_in_degrees = 1;
+//the number of sweep steps for the tuning slide
+tuning_slide_fn=150;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=10;
+steps=25;
 
-//the tuning slide will be rendered with two small squares under which you can print support
+//the tuning slide can be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
 //the height determines the ease of removal. 0.2 works well
 tuning_slide_support_height=0.2;
@@ -48,7 +56,7 @@ tuning_sleeve_extra_length = 0;
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
 
 // tuning slide radius, do not set this parameter, it is calculated based on length
-tuning_slide_radius = tuning_slide_length/pi;
+tuning_slide_radius = (tuning_slide_length-2*transition_to_bow_height)/pi;
 
 
 
@@ -97,7 +105,7 @@ slide_receiver_clearance = -0.02;
 /* clearance for the connectors on the braces between bell and neckpipe. Increase for looser fit */
 connection_base_clearance = 0.15;
 //The clearances of the glue joints
-joint_clearance = 0.13;
+joint_clearance = 0.12;
 
 
 //SLIDE RECEIVER
