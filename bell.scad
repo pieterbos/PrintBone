@@ -92,10 +92,14 @@ rotate([180,0,0]) {
         
     } else {    
         if(part == "all" || part == "bell_bottom") {
-            intersection() {
+            if(bell_bottom_fits_on_plate) {
                 render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);
-                translate([-120,-120,-200])
-                cube([210, 250, 200]);
+            } else {
+                intersection() {
+                    render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);
+                    translate([-120,-120,-200])
+                    cube([210, 250, 200]);
+                }
             }
         }
     }
@@ -250,16 +254,21 @@ module tuning_slide_side_neckpipe_bell_connection() {
 module neckpipe_bell_connection(height) {
 
 
-        difference() {
+       difference() {
             translate([0,0,height])
             rotate([90,0,0])
             cylinder(h = tuning_slide_radius*2, r=neckpipe_bell_connection_radius);
             solid_neckpipe(neckpipe_wall_thickness);
-            solid_bell();
+            solid_bell_segment(height-30, height+30);
 
-            connection_bases(connection_base_clearance);
-        }        
-     
+
+
+            bell_connection_bases(connection_base_clearance, difference_with_bell=false);//speed up rendering by making this part very simple
+           if(!render_neckpipe_bell_connection_with_neckpipe) {
+               neckpipe_connection_bases(connection_base_clearance);
+           }
+
+       }        
 
 
 }
@@ -385,20 +394,20 @@ module neckpipe_connection_base(translation, height, clearance) {
     }
 }
 
-module bell_connection_bases(clearance=0.0) {
-    upper_bell_connection_base(clearance);
-    lower_bell_connection_base(clearance);
+module bell_connection_bases(clearance=0.0, difference_with_bell=true) {
+    upper_bell_connection_base(clearance, difference_with_bell);
+    lower_bell_connection_base(clearance, difference_with_bell);
 }
 
-module upper_bell_connection_base(clearance=0.0) {
-    bell_connection_base(top_neckpipe_bell_connection_height, clearance);
+module upper_bell_connection_base(clearance=0.0, difference_with_bell=true) {
+    bell_connection_base(top_neckpipe_bell_connection_height, clearance, difference_with_bell);
 }
 
-module lower_bell_connection_base(clearance=0.0) {
-    bell_connection_base(neckpipe_bell_connection_height, clearance);
+module lower_bell_connection_base(clearance=0.0, difference_with_bell=true) {
+    bell_connection_base(neckpipe_bell_connection_height, clearance, difference_with_bell);
 }    
 
-module bell_connection_base(height, clearance) {
+module bell_connection_base(height, clearance, difference_with_bell=true) {
 
     cylinder_height=15; 
     difference() {
@@ -406,8 +415,11 @@ module bell_connection_base(height, clearance) {
         rotate([-70,0,0])
         scale([1,1,1])
         cylinder(r2=8+clearance, r1=1+clearance, h=cylinder_height, $fn=4);  
-        solid_bell();
+//        solid_bell();
+        if(difference_with_bell) {
+            solid_bell_segment(height-cylinder_height/2, height+cylinder_height);
         }
+    }
 }
 
 module small_tuning_slide_sleeve(wall_thickness, solid=false) {
@@ -462,5 +474,11 @@ module solid_bell() {
 
 module solid_bell_profile() {
     extrude_line(bell_profile, bell_wall_thickness, solid=true);
+}
+
+module solid_bell_segment(min_height, max_height) {
+    polygon = cut_curve(bell_profile, min_height, max_height);  
+    rotate_extrude()   
+        extrude_line(polygon, bell_wall_thickness, solid=true);
 }
 

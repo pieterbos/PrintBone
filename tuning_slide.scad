@@ -27,12 +27,14 @@ transition_to_bow_height = 3;*/
 inset_thickness=3;
 module tuning_slide(solid = false) {
     union() {
+        translate([0,transition_to_bow_height,0])
         tuning_slide_no_support(solid);
         intersection() {
             difference() {
                 rotate([0,90,0])
                     translate([0,0,-inset_thickness/2])
                     cylinder(r=tuning_slide_radius+4, h=inset_thickness);
+                translate([0,transition_to_bow_height,0])
                 tuning_slide_bow(solid=true);
                 translate([0,35.5-15/3-(tuning_slide_small_radius+tuning_slide_large_radius)/2,0])
                     rotate([90,0,0]) rotate([0,90,0])

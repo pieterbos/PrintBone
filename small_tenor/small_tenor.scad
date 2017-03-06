@@ -30,7 +30,7 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 120;
+$fn = 300;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
 sweep_steps = 150;
@@ -41,7 +41,7 @@ tuning_slide_step_length_in_degrees = 1;
 tuning_slide_fn=150;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=25;
+steps=75;
 
 //the tuning slide can be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
@@ -86,6 +86,7 @@ bell_input = [
 //if you set this to true, you will have to uncomment a line in generate_trombone.sh as well
 //see that file for more details
 render_bell_flare_in_two_pieces = false;
+bell_bottom_fits_on_plate=true;
 two_part_cut_height = -35;
 //where the bell should be cut for printing
 first_bell_cut = -195;
@@ -150,3 +151,5 @@ neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_s
 
 
 include <../bell.scad>;
+
+
