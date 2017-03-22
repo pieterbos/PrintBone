@@ -30,13 +30,10 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 300;
+$fn = 350;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
 sweep_steps = 150;
-//determines the level of detail of the tuning slide tube. Lower = higher quality
-//set to 1 for a really smooth tuning slide and LONG rendering time
-tuning_slide_step_length_in_degrees = 1;
 //the number of sweep steps for the tuning slide
 tuning_slide_fn=150;
 //steps of the bessel curve for loop. Increases bell detail.
@@ -50,7 +47,7 @@ tuning_slide_support_height=0.2;
 
 /* TUNING SLIDE RECEIVER PARAMETERS */
 //difference between outer diameter of tuning slide and inner diameter of sleeve in mm
-tuning_slide_spacing = 0.12;
+tuning_slide_spacing = 0.08;
 //the receiver can be slightly longer than the slide
 tuning_sleeve_extra_length = 0;
 tuning_slide_large_receiver_inner_radius = tuning_slide_large_radius + tuning_slide_wall_thickness + tuning_slide_spacing;
@@ -89,8 +86,8 @@ render_bell_flare_in_two_pieces = false;
 bell_bottom_fits_on_plate=true;
 two_part_cut_height = -35;
 //where the bell should be cut for printing
-first_bell_cut = -195;
-second_bell_cut = first_bell_cut - 195;
+first_bell_cut = -193;
+second_bell_cut = first_bell_cut - 193;
 third_bell_cut = second_bell_cut - 195;
 
 //thumb brace height. Higher thumb brace = more negative number, sorry bout that
@@ -102,7 +99,7 @@ top_neckpipe_bell_connection_height=-486.49;
 
 //CLEARANCES
 /* clearance for the slide receiver. Increase for a looser fit*/
-slide_receiver_clearance = -0.02;
+slide_receiver_clearance = 0.05;
 /* clearance for the connectors on the braces between bell and neckpipe. Increase for looser fit */
 connection_base_clearance = 0.15;
 //The clearances of the glue joints
@@ -111,11 +108,11 @@ joint_clearance = 0.12;
 
 //SLIDE RECEIVER
 //the smallest radius of the slide receiver. Measure this on your slide.
-slide_receiver_small_radius = 50/pi/2 + slide_receiver_clearance;
+slide_receiver_small_radius = 14.0/2;//50/pi/2 + slide_receiver_clearance;
 //the larges radius of the slide receiver. Measure this on your slide.
-slide_receiver_large_radius = 54.7/pi/2 + slide_receiver_clearance;
+slide_receiver_large_radius = 15.1/2;//54.7/pi/2 + slide_receiver_clearance;
 //The slide receiver length. Measure on your slide.
-slide_receiver_length=31.5 + slide_receiver_clearance;
+slide_receiver_length=23.3 + slide_receiver_clearance;
 
 //defines the slope. the connection between the neckpipe and the slide receiver
 //mainly for visual improvement.
