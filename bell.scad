@@ -23,6 +23,14 @@ bell_profile = create_bell_profile(bell_input, steps);
 //the height of the bell minus tuning slide receiver length
 //TODO: get rid of the 'minus tuning slide receiver length?
 total_bell_height = -sum_length(bell_input, 0); 
+
+neckpipe_cut_height_calculated = total_bell_height + neck_pipe_length - neckpipe_cut_height;
+echo(top_neckpipe_bell_connection_height - neckpipe_cut_height_calculated, "test");
+
+top_neckpipe_bell_connection_height=neckpipe_cut_height_calculated-neckpipe_bell_connection_radius;
+neckpipe_bell_connection_height = top_neckpipe_bell_connection_height+neckpipe_cut_height;
+echo(neckpipe_bell_connection_height);
+
 echo("total bell height", total_bell_height);
 rotate([180,0,0]) {
 
@@ -275,11 +283,11 @@ module neckpipe_bell_connection(height) {
 
 module bottom_part_of_neckpipe(wall_thickness) {
     intersection() {
-        translate([-50, -tuning_slide_radius*2-50, -480])
+        translate([-50, -tuning_slide_radius*2-50, neckpipe_cut_height_calculated])
         cube(neckpipe_cut_height);
            neckpipe(wall_thickness);
     }
-    translate([0, -tuning_slide_radius*2, -480])
+    translate([0, -tuning_slide_radius*2, neckpipe_cut_height_calculated])
     rotate_extrude()
     
     top_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true);
@@ -288,12 +296,12 @@ module bottom_part_of_neckpipe(wall_thickness) {
 
 module top_part_of_neckpipe(wall_thickness) {
     intersection() {
-        translate([-50, -tuning_slide_radius*2-50, -670])
+        translate([-50, -tuning_slide_radius*2-50,  neckpipe_cut_height_calculated-neckpipe_cut_height])
         cube(neckpipe_cut_height);
                    neckpipe(wall_thickness);
     }
     bottom_joint_height=10;
-    translate([0, -tuning_slide_radius*2, -670+neckpipe_cut_height-bottom_joint_height])
+    translate([0, -tuning_slide_radius*2, neckpipe_cut_height_calculated -bottom_joint_height])
     rotate_extrude()
     
     bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance,solid=false);
@@ -316,7 +324,7 @@ module solid_neckpipe(wall_thickness) {
         bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance, solid=true);
     connection_bases();
     bottom_joint_height=10;
-    translate([0, -tuning_slide_radius*2, -670+neckpipe_cut_height-bottom_joint_height])
+    translate([0, -tuning_slide_radius*2, neckpipe_cut_height_calculated -bottom_joint_height])
     rotate_extrude()    
     bottom_joint([[neck_pipe_radius,0], [neck_pipe_radius, 10]], rotate=true, joint_clearance, solid=true);
 }

@@ -30,15 +30,15 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 350;
+$fn = 75;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
-sweep_steps = 150;
+sweep_steps = 50;
 //the number of sweep steps for the tuning slide
-tuning_slide_fn=150;
+tuning_slide_fn=50;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=75;
+steps=20;
 
 //the tuning slide can be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.
@@ -93,8 +93,7 @@ third_bell_cut = second_bell_cut - 195;
 //thumb brace height. Higher thumb brace = more negative number, sorry bout that
 // the thumb brace should be positioned for easy holding, so close to the slide
 //TODO: just calculate this based on the neckpipe cut length
-neckpipe_bell_connection_height = -311.18;
-top_neckpipe_bell_connection_height=-486.49;
+
 
 
 //CLEARANCES
@@ -130,7 +129,7 @@ neckpipe_wall_thickness = 1.6;
 bell_wall_thickness = 1.6;
 
 //NECKPIPE. 
-neck_pipe_length = 269.10;
+neck_pipe_length = 295.10;
 neck_pipe_radius = 12.4/2; //inner radius of the neckpipe
 
 //the braces between neckpipe and bell radius.
