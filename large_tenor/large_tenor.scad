@@ -15,6 +15,14 @@ tuning_slide_small_radius = 7.55;
 // the radius of the large diameter tube of the tuning slide
 tuning_slide_large_radius = 9.9;
 
+
+//you probably won't need to change this
+bump_angle_1 = 25;
+bump_angle_2 = 335;
+bump_height = 3;
+bump_divisor = bump_angle_1/bump_height;
+transition_to_bow_height = 3;
+
 // the wall thickness of the tuning slide
 tuning_bow_wall_thickness = 1.2;
 // the wall thickness of the tuning slide tubes that go into the trombone
@@ -71,17 +79,12 @@ bell_input = [
 //if you set this to true, you will have to uncomment a line in generate_trombone.sh as well
 //see that file for more details
 render_bell_flare_in_two_pieces = false;
+bell_bottom_fits_on_plate=false;
 two_part_cut_height = -35;
 //where the bell should be cut for printing
 first_bell_cut = -195;
 second_bell_cut = first_bell_cut - 195;
 third_bell_cut = second_bell_cut - 195;
-
-//thumb brace height. Higher thumb brace = more negative number, sorry bout that
-// the thumb brace should be positioned for easy holding, so close to the slide
-//TODO: just calculate this based on the neckpipe cut length
-neckpipe_bell_connection_height = -311.18;
-top_neckpipe_bell_connection_height=-486.49;
 
 
 //CLEARANCES
@@ -108,7 +111,7 @@ slide_receiver_sleeve_length=25;
 
 
 //which part to render.
-part = "bell_top";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 //WALL THICKNESSES
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
@@ -128,7 +131,7 @@ neckpipe_bell_connection_radius=6.5;
 render_neckpipe_bell_connection_with_neckpipe=true;
 //neckpipe will usually be longer than you can print in one go
 //the length after which at which it will be cut
-neckpipe_cut_height=190;
+neckpipe_cut_height=180;
 
 
 neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_small_length -tuning_sleeve_extra_length;

@@ -90,11 +90,6 @@ first_bell_cut = -193;
 second_bell_cut = first_bell_cut - 193;
 third_bell_cut = second_bell_cut - 195;
 
-//thumb brace height. Higher thumb brace = more negative number, sorry bout that
-// the thumb brace should be positioned for easy holding, so close to the slide
-//TODO: just calculate this based on the neckpipe cut length
-
-
 
 //CLEARANCES
 /* clearance for the slide receiver. Increase for a looser fit*/

@@ -24,13 +24,22 @@ $fn=80;
 
 transition_to_bow_height = 3;*/
 
+bump_angle_1 = 25;
+bump_angle_2 = 335;
+bump_height = 3;
+bump_divisor = bump_angle_1/bump_height;
+
 inset_thickness=3;
 module tuning_slide(solid = false) {
     union() {
+
         translate([0,transition_to_bow_height,0])
         tuning_slide_no_support(solid);
+
+
         intersection() {
             difference() {
+                //render insert with logo for good looking easy printability without supports
                 rotate([0,90,0])
                     translate([0,0,-inset_thickness/2])
                     cylinder(r=tuning_slide_radius+4, h=inset_thickness);
@@ -39,18 +48,38 @@ module tuning_slide(solid = false) {
                 translate([0,35.5-15/3-(tuning_slide_small_radius+tuning_slide_large_radius)/2,0])
                     rotate([90,0,0]) rotate([0,90,0])
                     cylinder(r=tuning_slide_radius-35.5, h=10, $fn=3, center=true);
-                        
-                    mirror_and_self([0,0,1]) {
-                        translate([0,-tuning_slide_radius+2,-tuning_slide_radius])
-                            rotate([0,90,0])
-                            scale([0.7, 1.2, 1])
-                                cylinder(r=tuning_slide_radius+1, h=4, center=true, $fn=4);
-                    }
-                  /*  translate([0,-tuning_slide_radius+2,tuning_slide_radius])
-                        rotate([0,90,0])
-                        scale([0.7, 1.2, 1])
-                            cylinder(r=tuning_slide_radius, h=4, center=true, $fn=4);*/
-                    translate([inset_thickness-0.3,-tuning_slide_radius+10,0])
+                 
+
+
+                    insert_cutout(tuning_slide_small_radius);
+
+                     
+
+                    mirror([0,0,1])
+                        insert_cutout(tuning_slide_large_radius);                        
+
+                   renderLogo();
+
+            }
+            translate([-10/2,1.2-(tuning_slide_radius+tuning_slide_small_length)/2,-tuning_slide_radius])
+            cube([10,tuning_slide_radius+tuning_slide_small_length,tuning_slide_radius*2]);
+        }
+
+    }
+}
+
+module insert_cutout(peg_diameter) {
+    rotate([0,90, 0])
+     linear_extrude(height=10, center=true)
+     polygon([ 
+        [tuning_slide_radius-peg_diameter-bump_height, transition_to_bow_height], 
+        [tuning_slide_radius-peg_diameter, transition_to_bow_height], 
+        [(tuning_slide_radius-peg_diameter),-tuning_slide_small_length], 
+        [(tuning_slide_radius-peg_diameter)/3.2, -tuning_slide_small_length-10]]);  
+}
+
+module renderLogo() {
+     translate([inset_thickness-0.3,-tuning_slide_radius+10,0])
                         rotate([90,0,0])
                         rotate([0,90,0])
                         linear_extrude(height=inset_thickness, center=true)
@@ -62,13 +91,6 @@ module tuning_slide(solid = false) {
                         mirror([1,0,0])
                         linear_extrude(height=inset_thickness, center=true)
                         text("PrintBone",valign="center", $fn=40);
-
-            }
-            translate([-10/2,1.2-(tuning_slide_radius+tuning_slide_small_length)/2,-tuning_slide_radius])
-            cube([10,tuning_slide_radius+tuning_slide_small_length,tuning_slide_radius*2]);
-        }
-
-    }
 }
 
 module mirror_and_self(axis) {
@@ -150,10 +172,7 @@ function circle(r) = [
         r * [cos(a), sin(a)]
     ];
     
-bump_angle_1 = 25;
-bump_angle_2 = 335;
-bump_height = 3;
-bump_divisor = bump_angle_1/bump_height;
+
 function circle_with_bump(r) = [
     for (i=[0:$fn]) 
         let (a=i*360/$fn) 
