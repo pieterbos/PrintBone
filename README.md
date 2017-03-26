@@ -7,6 +7,32 @@ Parameterized design that can easily be changed into any trombone bell profile.
 The bell takes about 30 hours of print time on an original Prusa i3 MK2. It can most likely be printed faster with a 0.6mm or 0.8mm nozzle.
 The slide takes about 8-12 hours print time.
 
+# Current state
+
+The large tenor works well. Release 0.1 is listed with a zip file under releases. It can cause rendering issues on the tuning slide when working with the OpenSCAD file.
+
+Release 0.2 is coming up soon. improvements:
+- fixes the rendering issue with the tuning slide
+- renders much faster - only 10 minutes on a quad core i7
+- No more supports needed except for bell section
+- Tube connectors have a little bit more clearance, easier to assemble
+- Addition of a logo and a better slide bow - they print much easier now.
+- calculate the bell-neckpipe connection heights automatically, making it much easier to make a longer or shorter bell section
+
+Also, a new 7 inch bell section was added. It fits a Conn 48H/6H/director slide (or modify to fit your own slide).
+
+The master branch or at least commit a49e66a41785ac1fe58c5a61df087de6b6ca1ddf contain a fully working version. The large tenor is ready to print and small tenor could use some fixes:
+
+Open issues before release:
+- the small tenor is slightly too short, that should be easy to fix.
+- Tuning on some partials on small the tenor are acceptable, but could be better.
+- Still requires 200mm of print area height for the small tenor - perhaps I should cut it up differently so it can print on popular printers with 180mm height?
+
+Wishlist:
+- more designs, including some historical trombones
+- a way to construct a good inner slide
+- a 7 or 7.5 inch bell that prints without supports - should be very possible, looking at some existing designs
+
 # License
 PrintBone is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License.
 
@@ -45,6 +71,10 @@ You certainly can!
 3. Copy the large_tenor folder to a different one, give it a nice name
 4. Edit the parameters of the .scad file according to the documentation in the file.
 
+# Dependencies
+
+Check the download_dependencies.sh script, it will download the list-comprehension demos, the curved pipe library and scad-utils. Run this in the library folder of your OpenSCAD installation for this to work in all cases. Alternatively, work with a release version that contains all the dependencies plus the code in one archive file.
+
 # Usage
 
 You can just download and print the STL files. To work with the OpenSCAD file:
@@ -76,11 +106,6 @@ The current model is meant to be printed on a printer that can print at least 21
 
 If you want to print a smaller bell, a smaller printer will do.
 
-# Known issues
-
-- It needs to be shortened perhaps 5 millimeters, because it does A=442.5 with the tuning slide  all the way in.
-- the connection between the braces and the bell are a bit hard to glue. should be replaced with the connectors on the other side of the braces
-- the bottom-most t-profile connector of the bell coulf use a bit of more clearance
 
 # Slide
 
