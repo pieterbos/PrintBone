@@ -102,11 +102,17 @@ rotate([180,0,0]) {
         if(part == "all" || part == "bell_bottom") {
             if(bell_bottom_fits_on_plate) {
                 render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);
+                if(render_bell_support) {
+                    bell_support();
+                }
             } else {
                 intersection() {
-                    render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);
+                    render_bell_segment(render_bottom_lip=false, render_top_lip=true, min_height=first_bell_cut, max_height=0);                    
                     translate([-120,-120,-200])
                     cube([210, 250, 200]);
+                }
+                if(render_bell_support) {
+                    bell_support();
                 }
             }
         }
@@ -490,3 +496,60 @@ module solid_bell_segment(min_height, max_height) {
         extrude_line(polygon, bell_wall_thickness, solid=true);
 }
 
+//custom support rendering for bell bottom
+use <scad-utils/lists.scad>;
+
+//a partial circle, from begin to end. 0 to 1 means a full circle
+function circle_points(r, begin, end) = [
+    for (i=[0:$fn]) 
+        let (a=begin + i*(end-begin)/$fn) 
+        r * [cos(a*360), sin(a*360)]
+    ];
+
+    
+    
+support_thickness=0.42;
+
+function zigzag(outer_radius, inner_radius, extra=0, step=0.02) = flatten(
+    [for(i=[0:step:1])
+        concat(
+            circle_points(outer_radius, i+extra, i+step/2-extra, $fn=1),
+            circle_points(inner_radius, i+step/2-extra, i+step+extra, $fn=1)
+        )
+    ]
+);
+
+//polygon(test);
+
+
+smaller_bell_profile = concat([for(i=[0:len(bell_profile)]) bell_profile[i] + [0,0.1]],
+    bell_profile[len(bell_profile)-1] //include the first 0.1mm as well :)
+);
+
+module smaller_solid_bell_segment(smaller_bell_profile, min_height, max_height) {
+  //  polygon = cut_curve(smaller_bell_profile, min_height, max_height);  
+    rotate_extrude()   
+        extrude_line(smaller_bell_profile, 0, solid=true);//0 means no wall thickness - it's the inside profile we want here
+}
+//    rotate([0,180, 0])
+//smaller_solid_bell_segment(smaller_bell_profile, -900, 100);
+module bell_support_part(outer_radius, inner_radius, step) {
+
+    intersection() {
+       rotate([0,180,0])
+        linear_extrude(height=50) {
+            polygon(concat(zigzag(outer_radius, inner_radius, 0, step), 
+            zigzag(outer_radius-support_thickness, 
+                inner_radius - support_thickness, 
+                support_thickness/(outer_radius*2*PI), 
+                step)));
+        }
+        smaller_solid_bell_segment(smaller_bell_profile, -900, 100);
+
+    }
+}
+
+module bell_support() {
+    bell_support_part(bell_radius, bell_radius-15, step=0.015);
+    bell_support_part(bell_radius-15-0.5, bell_radius-30, step=0.02);
+}

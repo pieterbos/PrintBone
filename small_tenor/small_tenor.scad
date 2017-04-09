@@ -115,7 +115,7 @@ slide_receiver_sleeve_length=25;
 
 
 //which part to render.
-part = "all";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
+part = "bell_bottom";//bell_bottom;bell_middle;bell_top;tuning_slide;neckpipe_top;neckpipe_bottom;connection_bottom;connection_top; tube_connector_test_bottom;tube_connector_test_top;slide_receiver_test;tuning_slide_test;connection_test_one;connection_test_two
 
 //WALL THICKNESSES
 //the wall thickness of the neckpipe. A value between 0.8 and 1.6 should be fine, depending on your nozzle and slicer
@@ -140,7 +140,7 @@ neckpipe_cut_height=190;
 
 neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_small_length -tuning_sleeve_extra_length;
 
+//render custom bell support
+render_bell_support = true;
 
 include <../bell.scad>;
-
-
