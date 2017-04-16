@@ -136,6 +136,6 @@ neckpipe_cut_height=180;
 
 neck_pipe_minus_tuning_slide_receiver_length = neck_pipe_length - tuning_slide_small_length -tuning_sleeve_extra_length;
 
-render_bell_support=true;
+render_bell_support=false;
 
 include <../bell.scad>;

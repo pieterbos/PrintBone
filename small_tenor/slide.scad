@@ -4,7 +4,7 @@ parts do not assemble or otherwise fail
 
 use <../bent_tubes.scad>;
 
-$fn=360;
+$fn=300;
 
 //Because my inner tubes weren't according to spec, they have a ridiculous wall thickness of 1mm.
 //So this is a small bore 12mm inners and large bore15mm outers.
@@ -25,9 +25,11 @@ pi = 3.14159265359;
 slide_crook_length=52.35;//52.35 was the best so far, smaller=worse
 slide_crook_tube_length = slide_crook_length*pi;
 slide_crook_radius=7.5;//15 mm diameter, with my 15/16 outers
-slide_crook_wall_thickness=1.6; //to ensure airtightness. 1.6mm might work 
+slide_crook_wall_thickness=1.6; //to ensure airtightness.
 
-
+//distance between the grip and the bell connector. here for ergonomic reasons, but 
+//of course it changes tuning as well
+extra_handgrip_distance=12;
 
 echo(str("crook width: ", slide_crook_length, "mm"));
 
@@ -35,7 +37,6 @@ echo(str("crook tube length: ",slide_crook_tube_length), "mm");
 
 
 sweep_steps=300;
-circle_steps=1;
 
 slide_tube_length=700;  
 
@@ -69,16 +70,14 @@ outer_oversleeve_wall_thickness = 1.2;
 outer_oversleeve_radius = outer_slide_tube_outer_radius + slide_grip_inner_slide_clearance + outer_oversleeve_wall_thickness;
 
 
-
-//TODO: measure conn 48h and input here
-bell_connector_small_radius = 50/pi/2;
-bell_connector_large_radius = 54.7/pi/2;
-bell_connector_length = 31.5;
+bell_connector_small_radius = 14.0/2;
+bell_connector_large_radius = 15.1/2;
+bell_connector_length = 23.3;
 
 
 stockings_length=90;
 stocking_clearance=0.1;
-stocking_wall_thickness=0.33;
+stocking_wall_thickness=0.46;
 
 echo("stocking wall thickness:");
 echo(stocking_wall_thickness);
@@ -117,7 +116,7 @@ leadpipe_outside_slide_bit_wall_thickness=1.2;
 
 
 //TODO: set these parameters to produce a good leadpipe!
-leadpipe_venturi_radius=9.7/2;//could be about right for a 12mm bore slide
+leadpipe_venturi_radius=10.2/2;//could be about right for a 12mm bore slide
 leadpipe_venturi_distance_from_mouthpiece_receiver=70-mouthpiece_receiver_length;//just a guess, based on a large bore leadpipe
 //do not change unless you have a very small nozzle that can print tiny very strong walls :)
 leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - 0.4;
@@ -146,6 +145,9 @@ union() {
 
 //intersection() {
 //inner_slide_grip();
+leadpipe();
+
+//leadpipe(solid=true);
 //outer_slide_grip();
 //slide_crook();
 //translate([100,0,0])
@@ -155,13 +157,13 @@ union() {
 //slide_crook_sleeve(slide_crook_length);
 //slide_crook();
 //outer_slide_grip();
+//stocking();
 
-
-difference() {
+/*difference() {
     outer_slide_grip();
     translate([-20, -slide_tube_length-5 , -slide_crook_length-100]) cube(100);
     translate([-20, -slide_tube_length-5 , +slide_crook_length]) cube(100);
-}
+}*/
 /* renders a leadpipe with the set parameters, that can have extra_radius.
 it can be solid or not and it can have a bit of extra length at the outside
  */
@@ -472,27 +474,50 @@ module inner_slide_grip() {
     // move a bit to the side so both inner and outer can be rendered at the same time
 
     union() {
-        //1. the brace that you grip with your hand
+       
+        mouthpiece_receiver_tube_length = 15;
+        //length over which the inner slide will be glued
+        inner_slide_glue_length=16;
+        
+        inner_slide_brace();
+        
+        extra_tubing_for_mouthpiece(mouthpiece_receiver_tube_length, inner_slide_glue_length);
+        
+
+        inner_slide_glueing_tubes(mouthpiece_receiver_tube_length, inner_slide_glue_length);
+        
+        outer_slide_receiver_tubes(mouthpiece_receiver_tube_length, inner_slide_glue_length);
+   
+        translate([100,0,0])
+        bell_connector();
+    }
+}
+
+
+module inner_slide_brace() {
+     //1. the brace that you grip with your hand
         difference() {
             translate([100, -slide_tube_length + hand_grip_distance, -slide_crook_length])
             cylinder(r=outer_slide_grip_radius, h=slide_crook_length*2);
             translate([100,0,0])
             oversleeves(oversleeve_radius, 50);
         };
-        
+}
+
+module extra_tubing_for_mouthpiece(mouthpiece_receiver_tube_length, inner_slide_glue_length) {
         //the mouthpiece receiver can be larger diameter than your tube. in that case, you'll need
         //some extra tubing at the start. Let's render that
-        mouthpiece_receiver_tube_length = 15;
-        //length over which the inner slide will be glued
-        inner_slide_glue_length=16;
-        //  2. The mouthpiece receiver
-        difference() {
-            translate([100,0,0])
-            top_oversleeve(oversleeve_radius, mouthpiece_receiver_tube_length);            
-            leadpipe(extra_radius=0.1, solid=true, extra_outside_length=2);
-        }
-        
 
+    //  2. The mouthpiece receiver
+    difference() {
+        translate([100,0,0])
+        top_oversleeve(oversleeve_radius, mouthpiece_receiver_tube_length);            
+        leadpipe(extra_radius=0.1, solid=true, extra_outside_length=2);
+    }
+}
+
+module inner_slide_glueing_tubes(mouthpiece_receiver_tube_length, inner_slide_glue_length) {
+    
         //  3. The tubes in which the inner slide tubes will be glued
         //top
        difference() {
@@ -509,10 +534,10 @@ module inner_slide_grip() {
             inner_slide_tubes(solid=true);
             leadpipe(extra_radius=0.1, solid=true);
         }
-        
-        
+}
 
-        //  4. The tubes in which outer the slide goes when in first position 
+module outer_slide_receiver_tubes(mouthpiece_receiver_tube_length, inner_slide_glue_length) {
+         //  4. The tubes in which outer the slide goes when in first position 
         slope_length=5;
         difference() {
             union() {
@@ -535,22 +560,26 @@ module inner_slide_grip() {
 
             }
             translate([100,0,0])
-            outer_slide_tubes(extra_radius=slide_grip_clearance);
+            outer_slide_tubes(extra_radius=slide_grip_clearance, solid=true);
         }//
-        translate([100,0,0])
-        bell_connector();
-    }
 }
-
 
 
 module bell_connector() {
     translate([0, -slide_tube_length, -slide_crook_length])
     rotate([90,0,0])
-    difference() {
-        cylinder(r1=bell_connector_large_radius, r2=bell_connector_small_radius, h= bell_connector_length);
-        cylinder(r=inner_slide_tube_inner_radius, h=bell_connector_length);
+    union() {
+        difference() {
+           cylinder(r=oversleeve_radius, h=extra_handgrip_distance);
+           cylinder(r=inner_slide_tube_inner_radius, h=extra_handgrip_distance);
+        }
+        translate([0, 0, extra_handgrip_distance]) {
+        difference() {
+                cylinder(r1=bell_connector_large_radius, r2=bell_connector_small_radius, h=     bell_connector_length);
+                cylinder(r=inner_slide_tube_inner_radius, h=bell_connector_length);
+        }
     }
+}
 }
 
 module stockings() {
