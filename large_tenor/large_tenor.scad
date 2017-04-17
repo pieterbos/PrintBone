@@ -30,18 +30,18 @@ tuning_slide_wall_thickness = 0.8;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
-$fn = 20;
+$fn = 300;
 //determines the level of detail of the tuning slide. Higher = higher quality
 //set to something like 100 for a smooth tuning slide
-sweep_steps = 20;
+sweep_steps = 100;
 //determines the level of detail of the tuning slide tube. Lower = higher quality
 //set to 1 for a really smooth tuning slide and LONG rendering time
-tuning_slide_step_length_in_degrees = 4;
+tuning_slide_step_length_in_degrees = 1;
 //set to 300 for when you want to print
-tuning_slide_fn=20;
+tuning_slide_fn=300;
 //steps of the bessel curve for loop. Increases bell detail.
 //for development 50 is enought, for printing set to a few hundred
-steps=20;
+steps=200;
 
 //the tuning slide will be rendered with two small squares under which you can print support
 //this makes the model more stable, making printing much easier.

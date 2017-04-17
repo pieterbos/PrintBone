@@ -5,6 +5,7 @@ parts do not assemble or otherwise fail
 use <../bent_tubes.scad>;
 
 $fn=300;
+sweep_steps=20;
 
 //Because my inner tubes weren't according to spec, they have a ridiculous wall thickness of 1mm.
 //So this is a small bore 12mm inners and large bore15mm outers.
@@ -25,7 +26,7 @@ pi = 3.14159265359;
 slide_crook_length=52.35;//52.35 was the best so far, smaller=worse
 slide_crook_tube_length = slide_crook_length*pi;
 slide_crook_radius=7.5;//15 mm diameter, with my 15/16 outers
-slide_crook_wall_thickness=1.6; //to ensure airtightness.
+slide_crook_wall_thickness=1.8; //to ensure airtightness.
 
 //distance between the grip and the bell connector. here for ergonomic reasons, but 
 //of course it changes tuning as well
@@ -34,9 +35,6 @@ extra_handgrip_distance=12;
 echo(str("crook width: ", slide_crook_length, "mm"));
 
 echo(str("crook tube length: ",slide_crook_tube_length), "mm");
-
-
-sweep_steps=300;
 
 slide_tube_length=700;  
 
@@ -48,11 +46,15 @@ oversleeve_length=27;
 slide_crook_sleeve_length=30;
 
 
-//these can be bought in carbon tubes.
+//outer are carbon tubes of ID 15, OD 16
+//inner are carbon tubes of ID 12 OD 14
+//inners would be better with only 0.5mm wall thickness instead of 1, but my tubes were specced wrong
+//sometimes your tubes will have slightly different diameters. fun.
+top_slide_grip_inner_slide_clearance=0.10;
+bottom_slide_grip_inner_slide_clearance=0.14;
 
-slide_grip_inner_slide_clearance=0.04;//0.06=slightly too big
 slide_grip_clearance = 1.2;
-slide_grip_wall_thickness=1.6;
+slide_grip_wall_thickness=1.8;
 
 inner_slide_tube_inner_radius=12/2;
 inner_slide_tube_outer_radius=14/2;//(25.4*(5/8))/2;
@@ -61,19 +63,9 @@ outer_slide_tube_outer_radius=16/2;
 
 outer_slide_grip_radius=6.5;
 
-oversleeve_wall_thickness=0;
-
-oversleeve_radius = outer_slide_tube_outer_radius + oversleeve_wall_thickness;
-
-outer_oversleeve_wall_thickness = 1.2;
-
-outer_oversleeve_radius = outer_slide_tube_outer_radius + slide_grip_inner_slide_clearance + outer_oversleeve_wall_thickness;
-
-
 bell_connector_small_radius = 14.0/2;
 bell_connector_large_radius = 15.1/2;
 bell_connector_length = 23.3;
-
 
 stockings_length=90;
 stocking_clearance=0.1;
@@ -104,22 +96,38 @@ echo(mouthpiece_receiver_length);
 #inner_slide_tube
 
 /* [LEAD PIPE] */
+leadpipe_minimum_wall_thickness=0.45;
 leadpipe_length=199.8;
 //the amount of space between leadpipe and inners (radius, not diameter)
 leadpipe_clearance=0.04;
 //the first part of the leadpipe is outside of the slide so the mouthpiece fits and 
 //the leadpipe can be removed from the trombone slide
-leadpipe_outside_slide_bit_length=4;
+leadpipe_outside_slide_bit_length=15;
 //which needs a wall thickness
 leadpipe_outside_slide_bit_wall_thickness=1.2;
 
+//leadpipe outer bit can be straight or conical
+straight_leadpipe_outer_bit=false;
 
 
 //TODO: set these parameters to produce a good leadpipe!
 leadpipe_venturi_radius=10.2/2;//could be about right for a 12mm bore slide
 leadpipe_venturi_distance_from_mouthpiece_receiver=70-mouthpiece_receiver_length;//just a guess, based on a large bore leadpipe
 //do not change unless you have a very small nozzle that can print tiny very strong walls :)
-leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - 0.4;
+leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - leadpipe_minimum_wall_thickness;
+
+
+
+oversleeve_wall_thickness=1.8;
+
+oversleeve_radius = mouthpiece_receiver_large_radius + leadpipe_outside_slide_bit_wall_thickness + 0.45 + oversleeve_wall_thickness;
+top_oversleeve_radius = oversleeve_radius;
+bottom_oversleeve_radius = inner_slide_tube_outer_radius+oversleeve_wall_thickness;
+
+outer_oversleeve_wall_thickness = 1.2;
+
+outer_oversleeve_radius = outer_slide_tube_outer_radius + top_slide_grip_inner_slide_clearance + outer_oversleeve_wall_thickness;
+
 
 echo("leadpipe venturi/end diameter:");
 echo(leadpipe_venturi_radius*2);
@@ -144,8 +152,10 @@ union() {
 }*/
 
 //intersection() {
-//inner_slide_grip();
-leadpipe();
+inner_slide_grip();
+//inner_slide_glueing_tubes(15, 16);
+//slope_to_outer_slide_receiver(15, 16);
+//leadpipe();
 
 //leadpipe(solid=true);
 //outer_slide_grip();
@@ -158,7 +168,7 @@ leadpipe();
 //slide_crook();
 //outer_slide_grip();
 //stocking();
-
+//leadpipe_straight_outer_shape();
 /*difference() {
     outer_slide_grip();
     translate([-20, -slide_tube_length-5 , -slide_crook_length-100]) cube(100);
@@ -174,9 +184,9 @@ module leadpipe(extra_radius=0, solid=false, extra_outside_length=0, outer_shape
     union() {
         difference() {
             if(outer_shape_straight) {
-                leadpipe_straight_outer_shape(extra_radius+0.4);
+                leadpipe_straight_outer_shape(extra_radius+leadpipe_minimum_wall_thickness);
             } else {
-                leadpipe_inner_shape(extra_radius+0.4);
+                leadpipe_inner_shape(extra_radius+leadpipe_minimum_wall_thickness);
             }
             if(!solid) {
                 leadpipe_inner_shape(extra_radius);
@@ -194,24 +204,34 @@ module leadpipe(extra_radius=0, solid=false, extra_outside_length=0, outer_shape
 
 module leadpipe_outer_bit(extra_radius=0, extra_outside_length=0) {
     union() {
-        //part of tube outside of slide
-        cylinder(r=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness, h=leadpipe_outside_slide_bit_length);
-        if(extra_outside_length > 0) {
-            translate([0,0,-extra_outside_length])
-            cylinder(r=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness, h=extra_outside_length);
+        if(straight_leadpipe_outer_bit) {
+            //part of tube outside of slide
+            cylinder(r=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness, h=leadpipe_outside_slide_bit_length);
+            if(extra_outside_length > 0) {
+                translate([0,0,-extra_outside_length])
+                cylinder(r=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness, h=extra_outside_length);
+            }
+        } else {
+            //conical bit that should seal better
+             //part of tube outside of slide
+            cylinder(r1=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness,
+                r2=inner_slide_tube_inner_radius - leadpipe_clearance,
+                h=leadpipe_outside_slide_bit_length);
+            if(extra_outside_length > 0) {
+                translate([0,0,-extra_outside_length])
+                cylinder(r=mouthpiece_receiver_large_radius + extra_radius + leadpipe_outside_slide_bit_wall_thickness, h=extra_outside_length);
+            }
         }
-        //part of tube inside slide
-    //    translate([0,0,leadpipe_outside_slide_bit_length])
-     //   cylinder(r=inner_slide_tube_inner_radius-leadpipe_clearance, h=leadpipe_length-leadpipe_outside_slide_bit_length);
     }
 }
 
+//straight-ish outer shape - cannot always be straight or with some tube radiuses the mouthpiece receiver won't fit in the tube :)
 module leadpipe_straight_outer_shape(extra_radius=0) {
-    radius = inner_slide_tube_inner_radius - leadpipe_clearance;
+   radius = inner_slide_tube_inner_radius - leadpipe_clearance;//even with extra radius, don't make it bigger than this, never!
     union() {
         cylinder(
-            r1=mouthpiece_receiver_large_radius+extra_radius, 
-            r2=mouthpiece_receiver_small_radius+extra_radius, 
+            r1=max(mouthpiece_receiver_large_radius+extra_radius, radius), 
+            r2=max(mouthpiece_receiver_small_radius+extra_radius, radius),
             h=mouthpiece_receiver_length)
         ;
         
@@ -255,18 +275,18 @@ module outer_slide_grip() {
     difference() {
         translate([0, -slide_tube_length + hand_grip_distance, -slide_crook_length])
         cylinder(r=outer_slide_grip_radius, h=slide_crook_length*2);
-        oversleeves(outer_oversleeve_radius, oversleeve_length);
+        oversleeves(outer_oversleeve_radius, outer_oversleeve_radius, oversleeve_length);
     };
     
     difference() {
-        oversleeves(outer_oversleeve_radius, oversleeve_length);
-        outer_slide_tubes(slide_grip_inner_slide_clearance, true);
+        oversleeves(outer_oversleeve_radius, outer_oversleeve_radius, oversleeve_length);
+        outer_slide_tubes(top_slide_grip_inner_slide_clearance, true);
     }
 }
 
-module oversleeves(radius, length, start_position=0) {
-    top_oversleeve(radius, length, start_position);
-    bottom_oversleeve(radius, length, start_position);
+module oversleeves(top_radius, bottom_radius, length, start_position=0) {
+    top_oversleeve(top_radius, length, start_position);
+    bottom_oversleeve(bottom_radius, length, start_position);
 }
 module top_oversleeve(radius, length, start_position=0) {
     translate([0,-slide_tube_length+length+start_position,slide_crook_length])
@@ -434,7 +454,7 @@ module slide_crook_sleeve(translate, solid=false) {
         rotate([90,0,0])
         cylinder(r=slide_crook_sleeve_radius, h=slide_crook_sleeve_length);
         if(!solid) {
-            outer_slide_tubes(extra_radius=slide_grip_inner_slide_clearance, solid=true);
+            outer_slide_tubes(extra_radius=top_slide_grip_inner_slide_clearance, solid=true);
         }
     }
 }
@@ -445,12 +465,12 @@ module outer_slide_tubes(extra_radius=0, solid=false) {
 }  
 
 module inner_slide_tubes(extra_radius=0, solid=false) {
-  inner_slide_tube(extra_radius, solid, slide_crook_length);
-  inner_slide_tube(extra_radius, solid, -slide_crook_length);  
+  inner_slide_tube(extra_radius, solid, bottom=false);
+  inner_slide_tube(extra_radius, solid, bottom=true);  
 }  
 
-module inner_slide_tube(extra_radius, solid, translate) {
-    translate([100,0,translate])
+module inner_slide_tube(extra_radius, solid, bottom) {
+    translate([100,0,bottom ? -slide_crook_length: slide_crook_length])
     rotate([90,0,0])
     difference() {
         cylinder(r=inner_slide_tube_outer_radius + extra_radius, h=slide_tube_length+2);
@@ -471,8 +491,6 @@ module outer_slide_tube(extra_radius=0, solid=false, translate) {
 }
 
 module inner_slide_grip() {
-    // move a bit to the side so both inner and outer can be rendered at the same time
-
     union() {
        
         mouthpiece_receiver_tube_length = 15;
@@ -500,7 +518,7 @@ module inner_slide_brace() {
             translate([100, -slide_tube_length + hand_grip_distance, -slide_crook_length])
             cylinder(r=outer_slide_grip_radius, h=slide_crook_length*2);
             translate([100,0,0])
-            oversleeves(oversleeve_radius, 50);
+            oversleeves(top_oversleeve_radius, bottom_oversleeve_radius, 50);
         };
 }
 
@@ -511,7 +529,7 @@ module extra_tubing_for_mouthpiece(mouthpiece_receiver_tube_length, inner_slide_
     //  2. The mouthpiece receiver
     difference() {
         translate([100,0,0])
-        top_oversleeve(oversleeve_radius, mouthpiece_receiver_tube_length);            
+        top_oversleeve(top_oversleeve_radius, mouthpiece_receiver_tube_length);            
         leadpipe(extra_radius=0.1, solid=true, extra_outside_length=2);
     }
 }
@@ -522,46 +540,55 @@ module inner_slide_glueing_tubes(mouthpiece_receiver_tube_length, inner_slide_gl
         //top
        difference() {
             translate([100,0,0])
-            top_oversleeve(oversleeve_radius, inner_slide_glue_length, mouthpiece_receiver_tube_length);
-            inner_slide_tubes(extra_radius=slide_grip_inner_slide_clearance, solid=true);
+            top_oversleeve(top_oversleeve_radius, inner_slide_glue_length, mouthpiece_receiver_tube_length);
+            inner_slide_tube(extra_radius=top_slide_grip_inner_slide_clearance, solid=true, bottom=false);
             leadpipe(extra_radius=0.1, solid=true);
         }//*/
         
         //and bottom
        difference() {
             translate([100,0,0])
-            bottom_oversleeve(oversleeve_radius, mouthpiece_receiver_tube_length + inner_slide_glue_length);
-            inner_slide_tubes(solid=true);
+            bottom_oversleeve(bottom_oversleeve_radius, mouthpiece_receiver_tube_length + inner_slide_glue_length);
+            inner_slide_tube(extra_radius=bottom_slide_grip_inner_slide_clearance, solid=true, bottom=true);
             leadpipe(extra_radius=0.1, solid=true);
         }
 }
 
 module outer_slide_receiver_tubes(mouthpiece_receiver_tube_length, inner_slide_glue_length) {
          //  4. The tubes in which outer the slide goes when in first position 
-        slope_length=5;
-        difference() {
-            union() {
-                translate([100,-slide_tube_length+mouthpiece_receiver_tube_length + inner_slide_glue_length-slope_length, slide_crook_length])
-                rotate([-90,0,0])
-                cylinder(r1=oversleeve_radius, r2=outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness, h=slope_length);
-                
-                translate([100,-slide_tube_length+mouthpiece_receiver_tube_length + inner_slide_glue_length-slope_length, -slide_crook_length])
-                rotate([-90,0,0])
-                cylinder(r1=oversleeve_radius, r2=outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness, h=slope_length);
-            }
-            inner_slide_tubes(solid=true);
-            leadpipe(extra_radius=0.1, solid=true);
-        }
+       slope_to_outer_slide_receiver(mouthpiece_receiver_tube_length, inner_slide_glue_length);
         
+        //the tubes
+        local_outer_oversleeve_radius = outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness;
         difference() {
             translate([100,0,0])
             union() {
-                oversleeves(outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness, 25, mouthpiece_receiver_tube_length + inner_slide_glue_length);
+                oversleeves(local_outer_oversleeve_radius, local_outer_oversleeve_radius, 25, mouthpiece_receiver_tube_length + inner_slide_glue_length);
 
             }
             translate([100,0,0])
             outer_slide_tubes(extra_radius=slide_grip_clearance, solid=true);
         }//
+}
+
+module slope_to_outer_slide_receiver(mouthpiece_receiver_tube_length, inner_slide_glue_length) {
+     slope_length=5;
+    //the sloping part
+    difference() {
+            translate([100,-slide_tube_length+mouthpiece_receiver_tube_length + inner_slide_glue_length-slope_length, slide_crook_length])
+            rotate([-90,0,0])
+            cylinder(r1=top_oversleeve_radius, r2=outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness, h=slope_length);
+            inner_slide_tube(extra_radius=top_slide_grip_inner_slide_clearance, solid=true, bottom=false);
+            leadpipe(extra_radius=top_slide_grip_inner_slide_clearance, solid=true);
+    }
+    difference() {
+            translate([100,-slide_tube_length+mouthpiece_receiver_tube_length + inner_slide_glue_length-slope_length, -slide_crook_length])
+            rotate([-90,0,0])
+            cylinder(r1=bottom_oversleeve_radius, r2=outer_slide_tube_outer_radius+slide_grip_clearance+slide_grip_wall_thickness, h=slope_length);
+           inner_slide_tube(extra_radius=bottom_slide_grip_inner_slide_clearance, solid=true, bottom=true);
+    }
+            
+
 }
 
 
@@ -570,7 +597,11 @@ module bell_connector() {
     rotate([90,0,0])
     union() {
         difference() {
-           cylinder(r=oversleeve_radius, h=extra_handgrip_distance);
+            union() {
+                cylinder(r=bottom_oversleeve_radius, h=extra_handgrip_distance-3);
+                translate([0, 0, extra_handgrip_distance-3])
+                cylinder(r1=bottom_oversleeve_radius, r2=bell_connector_large_radius, h=3);
+            }
            cylinder(r=inner_slide_tube_inner_radius, h=extra_handgrip_distance);
         }
         translate([0, 0, extra_handgrip_distance]) {
