@@ -1,18 +1,18 @@
 /* [Mute Dimensions] */
 //the radius of the top of the mute, that is inside the bell
-mute_top_radius=25;// [5:0.5:100]
+mute_top_radius=21.5;// [5:0.5:100]
 //the radius of the widest part of the mute
 mute_wide_radius=49;// [5:0.5:200]
 //the radius of the base/bottom of the mute that sticks out of the bell
 mute_base_radius=25;// [5:0.5:100]
 
 //the flare of the mute. Changes the shape.
-mute_flare=0.6; // [0:0.02:8]
+mute_flare=0.55; // [0:0.02:8]
 
 //the flare of the bottom of the mute. Changes the shape
 mute_bottom_flare=-0.6; // [-4:0.02:0]
 //the height of the top part of the mute
-mute_top_height=108;
+mute_top_height=128;
 //the height of the bottom part of the mute
 mute_bottom_height=40;
 
@@ -28,13 +28,13 @@ hole_diameter_bottom = 4.6;
 //sometimes the taper of the bell is different than that of the mute. Set to true for a different fit area of the mute, false to remove it.
 render_better_fit_area="yes"; // [yes, no]
 //the height of the tapered area that fits the bell. It's the outside shape only
-tapered_area_height = 20;
-tapered_area_width=3.55;
+tapered_area_height = 30;
+tapered_area_width=4.3;
 tapered_area_flare=0.6;
 
 /* [Wall thicknesses] */
 //the wall thickness of the mute. If you increase the diameter, you might want to increase this.
-bell_wall_thickness = 1.2;
+bell_wall_thickness = 1.35;
 
 /* [DETAIL PARAMETERS] */
 //steps for all rotate_extrude calls. For development: 20 is enough. For printing set to 300
@@ -75,9 +75,10 @@ render_bell_profile = false;
 
 bell_input = [
 //part of the printbone, for reference
-    ["BESSEL", 15.07, 22.28, 0.894, 150.42],
-    ["BESSEL", 22.28, 41.18, 0.494, 96.85],
-    ["BESSEL", 41.18, 8.5*25.4/2, 1.110, 55.93]
+  //  ["BESSEL", 15.07, 22.28, 0.894, 150.42],
+ //   ["BESSEL", 22.28, 41.18, 0.494, 96.85],
+//    ["BESSEL", 41.18, 8.5*25.4/2, 1.110, 55.93]
+["BESSEL", 15, 8*25.4/2, 0.8, 255.93]
 ];
 bell_height = sum_length(mute_input, 0);
 bell_profile_full = create_bell_profile(bell_input, 50);
@@ -90,7 +91,6 @@ cork_bessel = [
 
 cork_profile = create_bell_profile(cork_bessel, 50);
 
-render_bell_profile=false;
 
 
 /**
