@@ -43,8 +43,12 @@ module tuning_slide(solid = false) {
                 rotate([0,90,0])
                     translate([0,0,-inset_thickness/2])
                     cylinder(r=tuning_slide_radius+4, h=inset_thickness);
+
+                //subtract the solid bow - no insert inside please :)
                 translate([0,transition_to_bow_height,0])
                 tuning_slide_bow(solid=true);
+
+                //subtract the nice looking PrintBone triangle
                 translate([0,35.5-15/3-(tuning_slide_small_radius+tuning_slide_large_radius)/2,0])
                     rotate([90,0,0]) rotate([0,90,0])
                     cylinder(r=tuning_slide_radius-35.5, h=10, $fn=3, center=true);
@@ -61,11 +65,24 @@ module tuning_slide(solid = false) {
                    renderLogo();
 
             }
-            translate([-10/2,1.2-(tuning_slide_radius+tuning_slide_small_length)/2,-tuning_slide_radius])
-            cube([10,tuning_slide_radius+tuning_slide_small_length,tuning_slide_radius*2]);
+
+        //make sure the insert does not extend below the pegs
+        translate([-10/2, 0, 0])
+        rotate([-90, 0, 0])
+        rotate([0, 90, 0])
+        linear_extrude(height=10)
+        polygon([
+            [-tuning_slide_radius, -tuning_slide_radius], [-tuning_slide_radius, tuning_slide_radius],
+            [tuning_slide_small_length,tuning_slide_radius], [tuning_slide_small_length, -tuning_slide_radius]
+        ]);
         }
 
     }
+   // translate([-10/2,10-(tuning_slide_radius+tuning_slide_small_length+transition_to_bow_height)/2,-tuning_slide_radius])
+     //       cube([10,tuning_slide_radius+tuning_slide_small_length+transition_to_bow_height, tuning_slide_radius*2]);
+
+
+            //translate([0,0,0]) rotate([0,90,0]) cylinder(r=tuning_slide_radius, center=true, h=100);
 }
 
 module insert_cutout(peg_diameter) {
@@ -79,18 +96,18 @@ module insert_cutout(peg_diameter) {
 }
 
 module renderLogo() {
-     translate([inset_thickness-0.3,-tuning_slide_radius+10,0])
+     translate([inset_thickness-0.3,-tuning_slide_small_length+3,0])
                         rotate([90,0,0])
                         rotate([0,90,0])
                         linear_extrude(height=inset_thickness, center=true)
-                        text("PrintBone", valign="center", $fn=40);
+                        text("PrintBone", valign="center", $fn=40, size=tuning_slide_small_length*11/67.32);
 
-                     translate([-inset_thickness+0.3, 0])
+                     translate([-inset_thickness+0.3, 1])
                         rotate([90,0,0])
                         rotate([0,90,0])
                         mirror([1,0,0])
                         linear_extrude(height=inset_thickness, center=true)
-                        text("PrintBone",valign="center", $fn=40);
+                        text("PrintBone",valign="center", $fn=40, size=tuning_slide_small_length*11/67.32);
 }
 
 module mirror_and_self(axis) {
