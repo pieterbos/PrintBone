@@ -1,25 +1,21 @@
 # PrintBone
 
-A 3D printable trombone. large bore, 8.5 inch. The bell fits a Bach 42 or 50 slide, or the included slide.
+A 3D printable trombone generator. You can use it to generate printable models for any trombone you like.
 
-Parameterized design that can easily be changed into any trombone bell profile.
+Currently included finished trombone designs:
+- A large bore, 8.5 inch trombone. The bell fits a Bach 42 or 50 slide, or the included PVC slide.
+- A small bore, 7 inch trombone. The bell fits a Conn 48h/6H or director slide, or the included carbon fiber slide
 
-The bell takes about 30 hours of print time on an original Prusa i3 MK2. It can most likely be printed faster with a 0.6mm or 0.8mm nozzle.
+The design is fully parameterized. This means you can use the scripts to create any trombone design you want, with any bell profile. This included modern trombone bore shapes, but is flexible enough to also create baroque models
+
+The bell takes about 15-30 hours of print time. It can most likely be printed faster with a 0.6mm or 0.8mm nozzle.
 The slide takes about 8-12 hours print time.
 
 # Current state
 
-The large tenor works well. Release 0.1 is listed with a zip file under releases. It can cause rendering issues on the tuning slide when working with the OpenSCAD file.
+The large tenor and the small tenor both work well and play well enough to be used as a serious musical instrument.
 
-Release 0.2 is coming up soon. improvements:
-- fixes the rendering issue with the tuning slide
-- renders much faster - only 10 minutes on a quad core i7
-- No more supports needed except for bell section
-- Tube connectors have a little bit more clearance, easier to assemble
-- Addition of a logo and a better slide bow - they print much easier now.
-- calculate the bell-neckpipe connection heights automatically, making it much easier to make a longer or shorter bell section
-
-Also, a new 7 inch bell section was added. It fits a Conn 48H/6H/director slide (or modify to fit your own slide).
+A baroque trombone and alto design have been added. The designs both have some rather serious playability issues.
 
 The master branch or at least commit a49e66a41785ac1fe58c5a61df087de6b6ca1ddf contain a fully working version. The large tenor is ready to print and small tenor could use some fixes:
 
@@ -57,7 +53,7 @@ In silver and blue with PVC tubes slide:
 
 # How does it play?
 
-Like a large bore trombone.
+Like a  trombone.
 
 It plays easily, sounds well and the partials are in tune. A short recording of both a printed bell and a regular brass bell with a metal slide is at https://soundcloud.com/pieter-bos-2013025 - can you guess which one is which?
 Also on soundcloud is a work-in-progress recording of the bell with a PVC slide. Expect improvements later on as I fix some leaks in the slide.
@@ -102,10 +98,7 @@ The ```generate_trombone.sh``` script generates all the models in STL format, wi
 test play the trombone. The entire range should respond evenly at all volumes. If any notes are hard to play, you probably have a leak somewhere.
 
 # How large a printer do I need?
-The current model is meant to be printed on a printer that can print at least 21*22*20 centimeters. It can be modified for smaller or larger printers relatively easily.
-
-If you want to print a smaller bell, a smaller printer will do.
-
+The current large bore model is meant to be printed on a printer that can print at least 21*22*20 centimeters. The small bore model fits on 180x180x200mm printers. It can be modified for smaller or larger printers relatively easily.
 
 # Slide
 
@@ -113,8 +106,7 @@ A full PVC slide with printed parts has been made, including stockings. It works
 
 http://imgur.com/a/jYNtB
 
-Also a Carbon fiber outer slide has been made, design has been modified so it prints without supports. A Bach 42B inner slide fits stock 15mm inner diameter 16mm outer diameter carbon tubes - although 14.9mm would be better. Slide action and looks are great, sound is very good but would be better with 14.9mm.
-
-A carbon fiber inner slide should be possible, or perhaps brass inner slides - China has some very inexpensive custom tube manufacturers.
+Also a Carbon fiber slide has been made. The design has been modified so it prints without supports. The carbon fiber slide is playable and a lot better than the pvc slide, but not great yet. To fix, a different material for the stockings is needed.
+The carbon fiber outer slide also fits a Bach 42B inner slide, and works very well on that. The exceptionally light slide really makes for a different playing experience! It could be improved by finding a 14.9mm carbon fiber tube instead of 15mm one so it leaks less air.
 
 To play with the slide design, check slide.scad and the stl files in the slide_out/ directory.
