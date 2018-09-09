@@ -27,8 +27,8 @@ leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - leadpip
 /* [MOUTHPIECE RECEIVER] */
 shank="small";
 
-large_shank_large_end_diameter = 0.496*25.4;
-large_shank_small_end_diameter = 0.546*25.4;
+large_shank_large_end_diameter = 0.546*25.4;
+large_shank_small_end_diameter = 0.496*25.4;
 large_shank_length = 25.4;
 
 small_shank_large_end_diameter = 0.475*25.4;
