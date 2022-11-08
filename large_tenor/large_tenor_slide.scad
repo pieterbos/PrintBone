@@ -107,7 +107,7 @@ leadpipe_length=199.8;
 leadpipe_clearance=0.04;
 //the first part of the leadpipe is outside of the slide so the mouthpiece fits and 
 //the leadpipe can be removed from the trombone slide
-leadpipe_outside_slide_bit_length=15;
+leadpipe_outside_slide_bit_length=4;
 //which needs a wall thickness
 leadpipe_outside_slide_bit_wall_thickness=1.2;
 
@@ -116,7 +116,7 @@ straight_leadpipe_outer_bit=false;
 
 
 //TODO: set these parameters to produce a good leadpipe!
-leadpipe_venturi_radius=10.2/2;//could be about right for a 12mm bore slide
+leadpipe_venturi_radius=12/2;//could be about right for a 12mm bore slide
 leadpipe_venturi_distance_from_mouthpiece_receiver=70-mouthpiece_receiver_length;//just a guess, based on a large bore leadpipe
 //do not change unless you have a very small nozzle that can print tiny very strong walls :)
 leadpipe_end_radius=inner_slide_tube_inner_radius - leadpipe_clearance - leadpipe_minimum_wall_thickness;
