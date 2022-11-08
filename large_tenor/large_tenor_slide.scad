@@ -7,10 +7,7 @@ use <../bent_tubes.scad>;
 $fn=100;
 sweep_steps=50;
 
-//Because my inner tubes weren't according to spec, they have a ridiculous wall thickness of 1mm.
-//So this is a small bore 12mm inners and large bore15mm outers.
-//to not make a slide that's utterly useless, those outers will fit a Bach 42B.
-//So I measured my Bach 42B to have the same slide crook. 
+//Bach 42B compatible slide distance. I measured my Bach 42B to have the same slide crook. 
 //Distance between inner part of tubes 89.05
 //Distance between outer part of tubes 120.0
 //tube width 15.45
@@ -25,12 +22,13 @@ pi = 3.14159265359;
 //slide_crook_length=slide_crook_tube_length/pi;
 slide_crook_length=52.35;//52.35 was the best so far, smaller=worse
 slide_crook_tube_length = slide_crook_length*pi;
+//the inner radius of the slide crook
 slide_crook_radius=7.5;//15 mm diameter, with my 15/16 outers
 slide_crook_wall_thickness=1.8; //to ensure airtightness.
 
 //distance between the grip and the bell connector. here for ergonomic reasons, but 
 //of course it changes tuning as well
-extra_handgrip_distance=12;
+extra_handgrip_distance=18;
 
 echo(str("crook width: ", slide_crook_length, "mm"));
 
@@ -41,7 +39,7 @@ slide_tube_length=700;
 //the distance between hand grip and end of inner slide
 
 hand_grip_distance = 6.5;
-oversleeve_length=27;
+oversleeve_length=50;
 
 slide_crook_sleeve_length=30;
 
@@ -57,19 +55,19 @@ slide_grip_clearance = 1.2;
 slide_grip_wall_thickness=1.8;
 
 //the inner radius of the inner slide tube
-inner_slide_tube_inner_radius=12/2;
+inner_slide_tube_inner_radius=13.7/2;;
 //the outer radius of the inner slide tube
-inner_slide_tube_outer_radius=14/2;//(25.4*(5/8))/2;
+inner_slide_tube_outer_radius=16.1/2;//(25.4*(5/8))/2;
 //the inner radius of the outer slide tube
-outer_slide_tube_inner_radius=15/2;
+outer_slide_tube_inner_radius=16.7/2;
 //the outer radius of the outer slide tube
-outer_slide_tube_outer_radius=16/2;
+outer_slide_tube_outer_radius=(25.4*(3/4))/2;
 
 outer_slide_grip_radius=6.5;
 
-bell_connector_small_radius = 14.0/2;
-bell_connector_large_radius = 15.1/2;
-bell_connector_length = 23.3;
+bell_connector_small_radius = 50/pi/2;
+bell_connector_large_radius = 54.7/pi/2;
+bell_connector_length = 31.5;
 
 stockings_length=90;
 stocking_clearance=0.1;
@@ -83,7 +81,7 @@ echo(stocking_wall_thickness);
 slide_crook_sleeve_radius=outer_slide_tube_outer_radius+slide_crook_wall_thickness;
 
 /* [MOUTHPIECE RECEIVER] */
-shank="small"; // [small, large]
+shank="large"; // [small, large]
 //mouthpiece_receiver_length = (shank == "small") ? 33 : 38;
 //mouthpiece_receiver_small_radius = ((shank == "large") ? 6 : 5);
 //according to bach guide: 13.867 and 12.6, 1 inch long
