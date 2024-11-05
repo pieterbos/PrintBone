@@ -2,17 +2,17 @@
 //the radius of the top of the mute, that is inside the bell
 mute_top_radius=21.5;// [5:0.5:100]
 //the radius of the widest part of the mute
-mute_wide_radius=49;// [5:0.5:200]
+mute_wide_radius=60;// [5:0.5:200]
 //the radius of the base/bottom of the mute that sticks out of the bell
-mute_base_radius=25;// [5:0.5:100]
+mute_base_radius=35;// [5:0.5:100]
 
 //the flare of the mute. Changes the shape.
-mute_flare=0.55; // [0:0.02:8]
+mute_flare=0.6; // [0:0.02:8]
 
 //the flare of the bottom of the mute. Changes the shape
 mute_bottom_flare=-0.6; // [-4:0.02:0]
 //the height of the top part of the mute
-mute_top_height=128;
+mute_top_height=150;
 //the height of the bottom part of the mute
 mute_bottom_height=40;
 
@@ -45,13 +45,14 @@ steps=100;
 /* [Text on mute] */
 //write text on mute
 write_text="yes"; // [no, yes]
+//write on bottom, or on side of mute
 write_on_bottom="yes"; // [no, yes]
 //the text on the mute
 text_to_write="PrintBone";
 //the height of the text on the mute from the bottom
 letter_height=52;
 //rotation of the text so it fits well on the mute
-letter_rotation=-21;
+letter_rotation=-31.5;
 
 /* [Hidden]*/
 //the mute, as a series of bessel curves
@@ -375,25 +376,14 @@ function reverse_key_value(array) =
 
 
 if(render_bell_profile) {
-    translate([0, 0, 39])
+    translate([0, 0, 57])
 rotate([90,0,0])
 //rotate_extrude()
     extrude_line(input_curve=bell_profile_full, wall_thickness=bell_wall_thickness, solid=false, remove_doubles=true, normal_walls=true);
 }
 
 
-if(write_text == "yes" && write_on_bottom=="no") {
-    translate([0,0,letter_height])
-        rotate([0,0,0])
-        writeOnMute(
-            text=text_to_write, 
-            radius=radius_at_height(bell_profile, letter_height)+bell_wall_thickness-0.4, 
-            letter_rotation=letter_rotation,
-            h=8.5);
-    mute();
-} else {
-    mute();
-}
+
 
 module writeOnMute(text,radius,letter_rotation, h=5, t=1, east=0, west=0, space =1.0, font){
     bold=0;
@@ -493,15 +483,28 @@ function text_width_one_letter(string, index) =
     font_spacing_data[search(string[index], font_spacing_data)[0]][1];
     
 
+module write_text() {
+    if(write_text == "yes" && write_on_bottom == "no") {
+        translate([0,0,letter_height])
+            rotate([0,0,0])
+            writeOnMute(
+                text=text_to_write, 
+                radius=radius_at_height(bell_profile, letter_height)+bell_wall_thickness-0.6, 
+                letter_rotation=letter_rotation,
+                h=8.5);
+    }
+}
+
+    
 module mute() {
     if(write_text == "yes" && write_on_bottom == "yes") {
         difference() {
             rotate_extrude()
             mute_bottom();
-            translate([0,-12,-0.01])
+            translate([0,-15.5,-0.01])
             mirror([-180, 0, 0])
             linear_extrude(0.3)
-            text(text_to_write, halign="center", valign="center", size=5.5);
+            text(text_to_write, halign="center", valign="center", size=7.5);
         }
     } else {
         rotate_extrude()
@@ -522,6 +525,11 @@ module mute() {
         }
 
     }   
+}
+
+union() {
+    write_text();
+    mute();
 }
 
 //render the cork to test fit
