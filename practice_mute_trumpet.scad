@@ -47,13 +47,13 @@ steps=100;
 /* [Text on mute] */
 //write text on mute
 write_text="yes"; // [no, yes]
-write_on_bottom="yes"; // [no, yes]
+write_on_bottom="no"; // [no, yes]
 //the text on the mute
 text_to_write="PrintBone";
 //the height of the text on the mute from the bottom
-letter_height=52;
+letter_height=42;
 //rotation of the text so it fits well on the mute
-letter_rotation=-21;
+letter_rotation=-26;
 
 /* [Hidden]*/
 //the mute, as a series of bessel curves
@@ -391,13 +391,13 @@ if(write_text == "yes" && write_on_bottom=="no") {
             text=text_to_write, 
             radius=radius_at_height(bell_profile, letter_height)+bell_wall_thickness-0.4, 
             letter_rotation=letter_rotation,
-            h=8.5);
+            h=5.5);
     mute();
 } else {
     mute();
 }
 
-module writeOnMute(text,radius,letter_rotation, h=5, t=1, east=0, west=0, space =1.0, font){
+module writeOnMute(text,radius,letter_rotation, h=5, t=0.8, east=0, west=0, space =1.0, font){
     bold=0;
 	center=false;
 	rotate=0;			// text rotation (clockwise)
@@ -421,7 +421,7 @@ module writeOnMute(text,radius,letter_rotation, h=5, t=1, east=0, west=0, space 
                 rotate([0,letter_rotation,0])
 				rotate(90,[1,0,0])
 				rotate(93.5,[0,1,0])
-                linear_extrude(height=t)
+                linear_extrude(t)
                 text(text[r], size=h, font=font);
 		//echo("zloc=",height/2-r*((rotate)/90*wid)+(len(text)-1)/2*((rotate)/90*wid));
 			}
